@@ -2,6 +2,11 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+### custom
+/config
+/logs
+/tmpFolder
+/workData
 
 ### STS ###
 .apt_generated

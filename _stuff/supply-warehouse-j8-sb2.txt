@@ -1,0 +1,14 @@
+https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/
+https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/dependency-versions.html#appendix.dependency-versions
+=================================== =================================== =================================== 
+demo. Java8 + SpringBoot2+JPA(Hibernate)
+<groupId>mil.teng.q2024</groupId>
+<artifactId>supply-warehouse-j8-sb2</artifactId>
+=================================== =================================== =================================== 
+init default Spring Initializr. maven, java 17,SpringBoot 3.2.10
+deps: Spring Web, Spring Data JPA, Liquibase Migration, Lombok, Thymeleaf, Spring Boot DevTools
+origin: supply-warehouse-j8-sb2.zip
+missed: JDBC driver
+=================================== =================================== =================================== 
+
+

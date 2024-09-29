@@ -1,0 +1,42 @@
+#    security.ignored=true
+#    security.basic.enabled=false
+
+
+spring:
+    liquibase:
+        enabled: false
+    sql:
+        init:
+            mode: always
+    application:
+        name: SupplyWarehouse-J8-SB2
+    datasource:
+        tomcat:
+            testOnBorrow: true
+            validationQuery: "SELECT 1"
+        url: "jdbc:postgresql://localhost:5432/supply_warehouse_db01?ssl=false"
+        username: supply_warehouse
+        password: 234q586
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        properties:
+            hibernate:
+                format_sql: true
+        show-sql: true
+        hibernate:
+            ddl-auto: none # none = disable Hibernate create the schema
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+    devtools:
+        add-properties: false
+        livereload:
+            port: 35730
+            enabled: false
+
+logging:
+    config: "config/log4j2.yaml"
+
+supply.warehouse.config:
+    simpleDebug: true
+
+server:
+    port: 8071

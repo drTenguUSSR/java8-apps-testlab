@@ -5,3 +5,7 @@ if [%JDK8_HOME%] NEQ [] (
 ) else (
 	echo env 'JDK8_HOME' not found. define for use special java
 )
+echo ===compiler
+javac -version
+echo ===runtime
+java -version
