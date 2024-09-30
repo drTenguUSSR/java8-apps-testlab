@@ -18,5 +18,6 @@ public class AppConfig {
     private boolean dumpResponses;
     private String dumpData;
     private String registrationCallback;
+    private String taskA;
     private Map<String,String> scheduler;
 }

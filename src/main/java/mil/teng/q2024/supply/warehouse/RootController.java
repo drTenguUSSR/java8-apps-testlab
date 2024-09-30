@@ -32,10 +32,11 @@ public class RootController {
         log.debug("dumpRequests={}", appConfig.isDumpRequests());
         log.debug("workingData={}", appConfig.getWorkingData());
         log.debug("registrationCallback={}", appConfig.getRegistrationCallback());
+        log.debug("taskA={}",appConfig.getTaskA());
         Map<String, String> tasks = appConfig.getScheduler();
         if (tasks != null) {
             tasks.forEach((key, value) -> {
-                log.debug("task: {} -> {}", key, value);
+                log.debug("task: '{}' -> '{}'", key, value);
             });
 
         }
