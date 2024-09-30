@@ -1,4 +1,4 @@
-package mil.teng.q2024.supply.warehouse;
+package mil.teng.q2024.supply.warehouse.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,12 +15,8 @@ public class AppConfig {
     private boolean simpleDebug;
     private String workingData;
     private boolean dumpRequests;
+    private boolean dumpResponses;
     private String dumpData;
     private String registrationCallback;
     private Map<String,String> scheduler;
-
-/**
- *     scheduler:
- *         lookup-new-certificate-response: 0/40 * * * * *
- */
 }

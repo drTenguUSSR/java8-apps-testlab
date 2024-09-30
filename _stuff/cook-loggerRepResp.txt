@@ -1,0 +1,5 @@
+Spring – Log Incoming Requests
+    https://www.baeldung.com/spring-http-logging
+
+How to log HTTP Request and Response in Spring Boot
+    https://petrepopescu.tech/2023/07/how-to-log-http-request-and-response-in-spring-boot/

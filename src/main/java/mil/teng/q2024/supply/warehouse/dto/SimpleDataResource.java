@@ -1,4 +1,4 @@
-package mil.teng.q2024.supply.warehouse;
+package mil.teng.q2024.supply.warehouse.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

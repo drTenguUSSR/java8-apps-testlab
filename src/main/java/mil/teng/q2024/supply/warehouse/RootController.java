@@ -1,12 +1,11 @@
 package mil.teng.q2024.supply.warehouse;
 
 import lombok.extern.slf4j.Slf4j;
+import mil.teng.q2024.supply.warehouse.config.AppConfig;
+import mil.teng.q2024.supply.warehouse.dto.SimpleDataResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +28,8 @@ public class RootController {
     @PostConstruct
     public void init() {
         log.debug("init-beg");
-        log.debug("simpleDebug={}",appConfig.isSimpleDebug());
-        log.debug("dumpRequests={}",appConfig.isDumpRequests());
+        log.debug("simpleDebug={}", appConfig.isSimpleDebug());
+        log.debug("dumpRequests={}", appConfig.isDumpRequests());
         log.debug("workingData={}", appConfig.getWorkingData());
         log.debug("registrationCallback={}", appConfig.getRegistrationCallback());
         Map<String, String> tasks = appConfig.getScheduler();
@@ -44,9 +43,17 @@ public class RootController {
     }
 
     @PostMapping(value = "/testTwo")
-    public ResponseEntity<SimpleDataResource> postTestTwo(@RequestBody SimpleDataResource requestData, HttpServletRequest req) {
+    public ResponseEntity<SimpleDataResource> postTestTwo(@RequestBody SimpleDataResource requestData
+            , @RequestParam Map<String, String> allParams, HttpServletRequest req) {
         String contentType = req.getHeader("Content-Type");
         log.debug("postTestTwo: textA={} textB={} ct={}", requestData.getTextA(), requestData.getTextB(), contentType);
+        if (allParams == null || allParams.isEmpty()) {
+            log.debug("allParams is null or empty");
+        } else {
+            log.debug("got params({}) =[", allParams.size());
+            allParams.forEach((key, value) -> log.debug("- [{}] -> [{}]", key, value));
+            log.debug("]");
+        }
         SimpleDataResource result = new SimpleDataResource();
         result.setTextA(requestData.getTextA() + ":" + requestData.getTextB());
         result.setTextB("now=" + Instant.now().toString());
