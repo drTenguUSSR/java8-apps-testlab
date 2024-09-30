@@ -38,11 +38,12 @@ logging:
 supply.warehouse.config:
     simple-debug: true
     working-data: D:\MyDocsTeng-workDoc\github-SupplyWarehouse-J8-SB2\workData\work
-    #dump-requests: false
+    dump-requests: true
     dump-data: D:\MyDocsTeng-workDoc\github-SupplyWarehouse-J8-SB2\workData\dump
     registration-callback: http://localhost:8071/fake/callback/clientRegistration
-    #scheduler:
-    #    lookup-new-certificate-response: 0/40 * * * * *
+    task-a: 1
+    scheduler:
+        lookup-new-certificate-response: 0/4 * * * * *
     #    temp-task-bravo: 0/40 * * * * *
     #    temp-task-delta: 0/40 * * * * *
 
