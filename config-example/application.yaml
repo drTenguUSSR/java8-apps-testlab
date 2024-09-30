@@ -36,7 +36,15 @@ logging:
     config: "config/log4j2.yaml"
 
 supply.warehouse.config:
-    simpleDebug: true
+    simple-debug: true
+    working-data: D:\MyDocsTeng-workDoc\github-SupplyWarehouse-J8-SB2\workData\work
+    #dump-requests: false
+    dump-data: D:\MyDocsTeng-workDoc\github-SupplyWarehouse-J8-SB2\workData\dump
+    registration-callback: http://localhost:8071/fake/callback/clientRegistration
+    #scheduler:
+    #    lookup-new-certificate-response: 0/40 * * * * *
+    #    temp-task-bravo: 0/40 * * * * *
+    #    temp-task-delta: 0/40 * * * * *
 
 server:
     port: 8071
