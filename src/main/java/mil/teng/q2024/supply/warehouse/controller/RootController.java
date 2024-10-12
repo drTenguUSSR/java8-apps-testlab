@@ -1,9 +1,12 @@
-package mil.teng.q2024.supply.warehouse;
+package mil.teng.q2024.supply.warehouse.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import mil.teng.q2024.supply.warehouse.config.AppConfig;
+import mil.teng.q2024.supply.warehouse.dto.EKeyboardResource;
 import mil.teng.q2024.supply.warehouse.dto.SimpleDataResource;
+import mil.teng.q2024.supply.warehouse.service.EKeyboardService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,31 +22,40 @@ import java.util.Map;
 public class RootController {
 
     private final AppConfig appConfig;
+    private final EKeyboardService eKeyboardService;
 
-    public RootController(AppConfig appConfig) {
+    public RootController(AppConfig appConfig, EKeyboardService eKeyboardService) {
         log.debug(".ctor called");
         this.appConfig = appConfig;
+        this.eKeyboardService = eKeyboardService;
     }
 
     @PostConstruct
     public void init() {
         log.debug("init-beg");
-        log.debug("simpleDebug={}", appConfig.isSimpleDebug());
-        log.debug("dumpRequests={}", appConfig.isDumpRequests());
-        log.debug("workingData={}", appConfig.getWorkingData());
-        log.debug("registrationCallback={}", appConfig.getRegistrationCallback());
-        log.debug("taskA={}",appConfig.getTaskA());
+        log.debug("\tsimpleDebug={}", appConfig.isSimpleDebug());
+        log.debug("\tdumpRequests={}", appConfig.isDumpRequests());
+        log.debug("\tworkingData={}", appConfig.getWorkingData());
+        log.debug("\tregistrationCallback={}", appConfig.getRegistrationCallback());
+        log.debug("\ttaskA={}", appConfig.getTaskA());
         Map<String, String> tasks = appConfig.getScheduler();
         if (tasks != null) {
             tasks.forEach((key, value) -> {
-                log.debug("task: '{}' -> '{}'", key, value);
+                log.debug("\ttask: '{}' -> '{}'", key, value);
             });
-
         }
         log.debug("init-end");
     }
 
-    @PostMapping(value = "/testTwo")
+    @GetMapping(value = "/test-one")
+    public ResponseEntity<SimpleDataResource> getTestOne() {
+        SimpleDataResource result = new SimpleDataResource();
+        result.setTextA("textA");
+        result.setTextB("now=" + Instant.now().toString());
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/test-two")
     public ResponseEntity<SimpleDataResource> postTestTwo(@RequestBody SimpleDataResource requestData
             , @RequestParam Map<String, String> allParams, HttpServletRequest req) {
         String contentType = req.getHeader("Content-Type");
@@ -59,6 +71,17 @@ public class RootController {
         result.setTextA(requestData.getTextA() + ":" + requestData.getTextB());
         result.setTextB("now=" + Instant.now().toString());
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/keyboard/create")
+    public ResponseEntity<SimpleDataResource> keyboardCreate(@RequestBody EKeyboardResource requestData) {
+        SimpleDataResource result = eKeyboardService.keyboardCreate(requestData);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/keyboard/list-all")
+    public ResponseEntity<SimpleDataResource> keyboardListAll(@RequestBody SimpleDataResource requestData) {
+        return null;
     }
 }
 

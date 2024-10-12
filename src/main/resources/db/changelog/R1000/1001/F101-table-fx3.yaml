@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: f101-1
+      author: sysop
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: fx3
+      comment: check-create fx3 table
+      changes:
+        - createTable:
+            tableName: fx3
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name:  firstname
+                  type:  varchar(50)
+              - column:
+                  name:  lastname
+                  type:  varchar(50)
+                  constraints:
+                    nullable:  false
+              - column:
+                  name:  state
+                  type:  char(2)
+
+  - changeSet:
+      id:  f101-2
+      author: sysop
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM fx3
+      comment: вставить одну запись, если таблица пуста
+      changes:
+        - insert:
+            tableName:  fx3
+            columns:
+            -  column:
+                 name:  firstname
+                 value:  John
+            -  column:
+                 name:  lastname
+                 value:  Doe2
+            -  column:
+                 name:  state
+                 value:  TX

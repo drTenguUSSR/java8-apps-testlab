@@ -82,16 +82,16 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             RepeatableContentCachingRequestWrapper requestWrapper = new RepeatableContentCachingRequestWrapper(request,log);
-            ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+//            ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
             String prefix = makeMark();
             if (appConfig.isDumpRequests()) {
                 logRequest(requestWrapper, prefix);
             }
-            filterChain.doFilter(requestWrapper, responseWrapper);
-            if (appConfig.isDumpResponses()) {
-                logResponse(responseWrapper, prefix);
-            }
+            filterChain.doFilter(requestWrapper, response); //responseWrapper
+//            if (appConfig.isDumpResponses()) {
+//                logResponse(responseWrapper, prefix);
+//            }
         }
     }
 

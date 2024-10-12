@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: f100-seq101
+      author: sysop
+#      preConditions:
+#        - onFail: MARK_RAN
+#        - not:
+#            - indexExists:
+#                indexName: seq_101
+      comment: check-create sequence seq_101
+      changes:
+        - createSequence:
+            cacheSize: 1
+            cycle: false
+            dataType: bigint
+            incrementBy: 1
+            minValue: 1
+            sequenceName: seq_101
+            startValue: 101
+
+  - changeSet:
+      id: f100-seq102
+      author: sysop
+#      preConditions:
+#        - onFail: MARK_RAN
+#        - not:
+#            - indexExists:
+#                indexName: seq_102
+      comment: check-create sequence seq_102
+      changes:
+        - createSequence:
+            cacheSize: 1
+            cycle: false
+            dataType: bigint
+            incrementBy: 1
+            minValue: 1
+            sequenceName: seq_102
+            startValue: 102
