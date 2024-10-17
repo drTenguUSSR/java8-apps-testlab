@@ -28,6 +28,24 @@ Configuration:
               AppenderRef:
                 - ref: Console_Appender
                 - ref: File_Appender
+            - name: org.hibernate.SQL
+              level: debug
+              additivity: false
+              AppenderRef:
+                - ref: Console_Appender
+                - ref: File_Appender
+            - name: org.hibernate.type.descriptor.sql.BasicBinder
+              level: trace
+              additivity: false
+              AppenderRef:
+                - ref: Console_Appender
+                - ref: File_Appender
+            - name: liquibase
+              level: trace
+              additivity: false
+              AppenderRef:
+                - ref: Console_Appender
+                - ref: File_Appender
         Root:
             level: info
             AppenderRef:

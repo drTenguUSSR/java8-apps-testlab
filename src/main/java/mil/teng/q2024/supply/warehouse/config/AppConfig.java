@@ -2,6 +2,7 @@ package mil.teng.q2024.supply.warehouse.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -17,9 +18,10 @@ import java.util.Map;
 
 @Configuration
 @ConfigurationProperties(prefix = "supply.warehouse.config")
+@Validated
 @Getter
 @Setter
-@Validated
+@ToString
 public class AppConfig implements Validator {
     private boolean simpleDebug;
     private String workingData;
@@ -31,6 +33,7 @@ public class AppConfig implements Validator {
     @NotBlank
     private String taskA;
     private Map<String,String> scheduler;
+    private Map<String,String> pingTls;
 
     @Override
     public boolean supports(Class<?> clazz) {

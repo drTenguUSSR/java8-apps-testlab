@@ -4,7 +4,7 @@
 
 spring:
     liquibase:
-        enabled: false
+        enabled: true
     sql:
         init:
             mode: always
@@ -24,7 +24,10 @@ spring:
                 format_sql: true
         show-sql: true
         hibernate:
-            ddl-auto: none # none = disable Hibernate create the schema
+            # none = disable Hibernate create the schema
+            # create = Hibernate удалит все таблицы в базе и создаст их заново на основе данных из аннотаций.
+            # validate = только сверка
+            ddl-auto: validate
         database-platform: org.hibernate.dialect.PostgreSQLDialect
     devtools:
         add-properties: false
@@ -43,9 +46,16 @@ supply.warehouse.config:
     registration-callback: http://localhost:8071/fake/callback/clientRegistration
     task-a: 1
     scheduler:
-        lookup-new-certificate-response: 0/4 * * * * *
+        lookup-new-certificate-response: 0 */5 * * * *
     #    temp-task-bravo: 0/40 * * * * *
     #    temp-task-delta: 0/40 * * * * *
+    ping-tls:
+        f1 : https://catfact.ninja/fact
+        sber : https://www.sberbank.ru/ru/person?from=sbrf.ru
+        badSelfSign : https://self-signed.badssl.com
+        badWrongHost : https://wrong.host.badssl.com/
+        badUntrustedRoot : https://untrusted-root.badssl.com/
+        loop : http://localhost:8071/main/test-one
 
 server:
     port: 8071

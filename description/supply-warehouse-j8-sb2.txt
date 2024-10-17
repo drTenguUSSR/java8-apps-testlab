@@ -1,0 +1,44 @@
+https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/
+https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/dependency-versions.html#appendix.dependency-versions
+=================================== =================================== =================================== 
+demo. Java8 + SpringBoot2+JPA(Hibernate)
+<groupId>mil.teng.q2024</groupId>
+<artifactId>supply-warehouse-j8-sb2</artifactId>
+=================================== =================================== =================================== 
+init default Spring Initializr. maven, java 17,SpringBoot 3.2.10
+deps: Spring Web, Spring Data JPA, Liquibase Migration, Lombok, Thymeleaf, Spring Boot DevTools
+origin: supply-warehouse-j8-sb2.zip
+missed: JDBC driver
+=================================== =================================== =================================== 
+TLS-client. spring. working with trust store
+https://stackoverflow.com/questions/27724544/specifying-trust-store-information-in-spring-boot-application-properties
+````
+@Configuration
+public class SslConfiguration {
+    @Value("${http.client.ssl.trust-store}")
+    private Resource keyStore;
+    @Value("${http.client.ssl.trust-store-password}")
+    private String keyStorePassword;
+
+    @Bean
+    RestTemplate restTemplate() throws Exception {
+        SSLContext sslContext = new SSLContextBuilder()
+                .loadTrustMaterial(
+                        keyStore.getURL(),
+                        keyStorePassword.toCharArray()
+                ).build();
+        SSLConnectionSocketFactory socketFactory =
+                new SSLConnectionSocketFactory(sslContext);
+        HttpClient httpClient = HttpClients.custom()
+                .setSSLSocketFactory(socketFactory).build();
+        HttpComponentsClientHttpRequestFactory factory =
+                new HttpComponentsClientHttpRequestFactory(httpClient);
+        return new RestTemplate(factory);
+    }
+}
+````
+=================================== =================================== ===================================
+TLS-server. spring
+https://www.geeksforgeeks.org/how-to-enable-https-in-spring-boot-application/
+https://github.com/indrabasak/spring-tls-example
+=================================== =================================== ===================================

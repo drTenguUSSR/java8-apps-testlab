@@ -1,1 +1,1 @@
-curl -vvv -X POST -H "Content-Type: application/json" -d "@K01.keyboard-create.json" "http://localhost:8071/main/keyboard/create"
+curl -vvv -X POST -H "Content-Type: application/json" -H "User-Agent: Mozilla/5.0 curl" -d "@K01.keyboard-create.json" "http://localhost:8071/main/keyboard/create"

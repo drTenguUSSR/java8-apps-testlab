@@ -1,6 +1,7 @@
 package mil.teng.q2024.supply.warehouse.dumper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mil.teng.q2024.supply.warehouse.config.AppConfig;
 import org.springframework.stereotype.Component;
@@ -25,15 +26,11 @@ import java.util.UUID;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class HttpLoggingFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper;
     private final AppConfig appConfig;
-
-    public HttpLoggingFilter(ObjectMapper objectMapper, AppConfig appConfig) {
-        this.objectMapper = objectMapper;
-        this.appConfig = appConfig;
-    }
 
     private static Map<String, String> collectHeaders(RepeatableContentCachingRequestWrapper requestWrapper) {
         Enumeration<String> headerNames = requestWrapper.getHeaderNames();
