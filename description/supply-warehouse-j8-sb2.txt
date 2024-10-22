@@ -41,4 +41,33 @@ public class SslConfiguration {
 TLS-server. spring
 https://www.geeksforgeeks.org/how-to-enable-https-in-spring-boot-application/
 https://github.com/indrabasak/spring-tls-example
+=================================== =================================== log4j2
+lib:
+    org.apache.logging.log4j:log4j-api:jar:2.17.2:compile
+
+official site:
+    https://logging.apache.org/log4j/2.x/manual/appenders/rolling-file.html
+настройки:
+    <Policies>/<TimeBasedTriggeringPolicy interval="1"> - срабатывает, если filePattern/%d{} меняет свое значение.
+        пример: если "main.%d{yyyyMMdd-HH}-%i.log.zip" - то будет срабатывать 1 раз в час
+        ? (не точно) interval - "прореживание" запусков. если 3 - то вместо 3х запусков по дате-время будет 1.
+    <Policies>/<SizeBasedTriggeringPolicy size="400kb"/> - срабатывает, длина текущего лог-файла до 400кб
+    <Delete>/<IfAccumulatedFileSize exceeds="2000 kb" />
+    - считает длину самих log файлов (даже если они упакованы в zip)
+
+    "main.%d{yyyyMMdd-HH}-%i.log.zip" - застревают логи за предыдущий час (нет rollup, если "час" предыдущий),
+    в расчетах лимита по SizeBasedTriggeringPolicy участвуют логи только текущего часа
+
+
+schema: log4j-config-2.xsd
+    скачана с https://logging.apache.org/xml/ns/
+    targetNamespace="http://logging.apache.org/log4j/2.0/config"
+===
+levels:
+https://stackoverflow.com/questions/25532338/how-to-configure-log4j2s-additivity-to-respect-parents-level
+=== распаковка логов по подпапкам
+for %%i in (*.zip) do (
+mkdir fol-%%i
+7z x %%i -ofol-%%i
+)
 =================================== =================================== ===================================

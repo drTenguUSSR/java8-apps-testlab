@@ -39,6 +39,10 @@ public class RootController {
 
     @GetMapping(value = "/test-one")
     public ResponseEntity<SimpleDataResource> getTestOne() {
+        log.debug("getTestOne: debug");
+        log.info("getTestOne: info");
+        log.warn("getTestOne: warn");
+        log.error("getTestOne: error");
         SimpleDataResource result = new SimpleDataResource();
         result.setTextA("textA");
         result.setTextB("now=" + Instant.now().toString());

@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class SimpleWrite2Console {
-    public static String taskName="lookup-new-certificate-response";
+public class SimpleScheduled {
+    public static String taskName="task-simple";
 
-    @Scheduled(cron = "#{@appConfig.getScheduler().get(T(mil.teng.q2024.supply.warehouse.tasks.SimpleWrite2Console).taskName)}")
+    @Scheduled(cron = "#{@appConfig.getScheduler().get(T(mil.teng.q2024.supply.warehouse.tasks.SimpleScheduled).taskName)}")
     public void simple() {
         log.debug("simple runed");
     }

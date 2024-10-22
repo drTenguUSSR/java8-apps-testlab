@@ -8,6 +8,7 @@ target/
 /logs
 /tmpFolder
 /workData
+/*.log
 
 ### STS ###
 .apt_generated

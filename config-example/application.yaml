@@ -36,7 +36,10 @@ spring:
             enabled: false
 
 logging:
-    config: "config/log4j2.yaml"
+    config: "config/log4j2.xml"
+    #config: "config/log4j2.yaml"
+    #config: "config/log2j2-config-2.17.xml"
+
 
 supply.warehouse.config:
     simple-debug: true
@@ -46,9 +49,14 @@ supply.warehouse.config:
     registration-callback: http://localhost:8071/fake/callback/clientRegistration
     task-a: 1
     scheduler:
-        lookup-new-certificate-response: 0 */5 * * * *
-    #    temp-task-bravo: 0/40 * * * * *
-    #    temp-task-delta: 0/40 * * * * *
+        task-simple: "0 */5 * * * *"
+        task-big-logger: "0/1 * * * * *"
+    # disable schedule: "-"
+    #    temp-task-bravo: "0/40 * * * * *"
+    #    temp-task-delta: "0/40 * * * * *"
+    #    task every 1 minutes: "0 0/1 * * * *"
+    #    task every 5 minutes: "0 */5 * * * *"
+    #    task every 1 seconds: "0/1 * * * * *"
     ping-tls:
         f1 : https://catfact.ninja/fact
         sber : https://www.sberbank.ru/ru/person?from=sbrf.ru
