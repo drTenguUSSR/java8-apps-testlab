@@ -1,0 +1,9 @@
+generate info: sub-prj-animals-by-classes
+
+cmd: mvn archetype:generate
+1. select-id=2204
+2. version=1.5 (9)
+3. groupId=mil.teng.q2024
+4. artifactId=sub-prj-animals-by-classes
+5. package=mil.teng.q2024.animals4classes
+==> java- compiler=17
