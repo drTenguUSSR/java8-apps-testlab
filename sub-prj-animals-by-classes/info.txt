@@ -7,3 +7,6 @@ cmd: mvn archetype:generate
 4. artifactId=sub-prj-animals-by-classes
 5. package=mil.teng.q2024.animals4classes
 ==> java- compiler=17
+
+lib from:
+https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/dependency-versions.html#appendix.dependency-versions
