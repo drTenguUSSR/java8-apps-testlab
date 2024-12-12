@@ -18,6 +18,10 @@ public abstract class Animal {
         return logger;
     }
 
+    public static String getRawInfo() {
+        return "202412-12. 13:56";
+    }
+
     public String getName() {
         return name;
     }

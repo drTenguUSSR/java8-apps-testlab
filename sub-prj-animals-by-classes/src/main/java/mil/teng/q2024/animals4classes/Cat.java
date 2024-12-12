@@ -3,13 +3,16 @@ package mil.teng.q2024.animals4classes;
 import mil.teng.q2024.animals4classes.habit.HomeHabit;
 
 public class Cat extends Animal implements HomeHabit {
+    private SoundToolObj soundToolObj=new SoundToolObj();
     public Cat(String name, int age) {
         super(name, age);
     }
 
     @Override
     public void makeSound() {
-        getLogger().info("cat {} say: meow!", getName());
+        getLogger().info("cat say-beg");
+        soundToolObj.makeSound("cat say meow! with name",getName());
+        getLogger().info("cat say-end");
     }
 
     @Override

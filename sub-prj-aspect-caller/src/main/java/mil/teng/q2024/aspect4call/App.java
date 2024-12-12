@@ -14,17 +14,29 @@ public class App {
 
     public static void main(String[] args) {
         logger.error("===================================");
+        logger.info("load info Animal:{}",Animal.getRawInfo());
+
+        logger.info("makeSound-before");
+        makeSound();
+        logger.info("makeSound-after");
+
         String stamp = "sub-prj-aspect-caller: " + Instant.now().toString();
         System.out.println("console message:" + stamp);
         logger.info("message info {}", stamp);
         logger.error("message error {}", stamp);
 
-        Animal vaska = new Cat("Mashka", 3);
-        Animal toto = new Dog("Toto", 10);
+        Animal vaska = new Cat("Vaska", 3);
         logger.info("vaska is name={} age={}", vaska.getName(), vaska.getAge());
+        vaska.makeSound();
         checkAndPlay(vaska);
+
+        Animal toto = new Dog("Toto", 10);
         logger.info("toto is name={} age={}", toto.getName(), toto.getAge());
         checkAndPlay(toto);
+        toto.makeSound();
+
+        InterProjectCall ipc = new InterProjectCall();
+        ipc.someCall();
         logger.error("========= done!");
     }
 
@@ -37,5 +49,9 @@ public class App {
         logger.info("play start with RED ball");
         String ret = homed.playingWoolBall(5, "RED");
         logger.info("play return {}", ret);
+    }
+
+    public static void makeSound() {
+        logger.info("inProject make sound");
     }
 }
