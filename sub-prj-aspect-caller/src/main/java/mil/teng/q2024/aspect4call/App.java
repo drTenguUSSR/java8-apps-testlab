@@ -1,6 +1,7 @@
 package mil.teng.q2024.aspect4call;
 
 import mil.teng.q2024.animals4classes.Animal;
+import mil.teng.q2024.animals4classes.AnimalLombok;
 import mil.teng.q2024.animals4classes.Cat;
 import mil.teng.q2024.animals4classes.Dog;
 import mil.teng.q2024.animals4classes.habit.HomeHabit;
@@ -37,8 +38,28 @@ public class App {
 
         InterProjectCall ipc = new InterProjectCall();
         ipc.someCall();
+
+        animalLombok();
+        //aspectedLombok();
+
         logger.error("========= done!");
     }
+    private static void animalLombok() {
+        logger.info("AnimalLombok-beg");
+        AnimalLombok animalLombok=new AnimalLombok("first","last");
+        animalLombok.setDataLen(155);
+        logger.info("animalLombok res:{}",animalLombok);
+        logger.info("AnimalLombok-end");
+    }
+
+//AJC error: The constructor AspectedLombok(String, String) is undefined
+//    private static void aspectedLombok() {
+//        logger.info("AspectedLombok-beg");
+//        AspectedLombok aspectedLombok=new AspectedLombok("five","seven");
+//        aspectedLombok.setDataLen(204);
+//        logger.info("aspectedLombok res:{}",aspectedLombok);
+//        logger.info("AspectedLombok-end");
+//    }
 
     private static void checkAndPlay(Animal animal) {
         if (!(animal instanceof HomeHabit)) {
