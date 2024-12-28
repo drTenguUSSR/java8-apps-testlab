@@ -38,13 +38,14 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation 'org.slf4j:slf4j-api:2.0.16'
 
-    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    // https://projectlombok.org
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
 }
 
 application {
-    mainClass = "sub.gradle.alone.App"
+    mainClass = "mil.teng.q2024.sub.gradle.alone.App"
 }
 
 jar {
@@ -63,6 +64,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+// use if compiler>=9
 //tasks.withType(JavaCompile) {
 //    options.release = 8
 //}

@@ -37,7 +37,7 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="mil.teng.q2024" level="DEBUG"/>
+        <Logger name="mil.teng.q2024.sub.gradle.alone" level="DEBUG"/>
         <Logger name="org.hibernate.SQL" level="DEBUG"/>
         <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
         <Logger name="liquibase" level="TRACE"/>

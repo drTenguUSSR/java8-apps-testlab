@@ -3,6 +3,7 @@
  */
 package sub.gradle.alone;
 
+import mil.teng.q2024.sub.gradle.alone.App;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
