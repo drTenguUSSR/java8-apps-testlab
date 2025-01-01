@@ -1,1 +1,0 @@
-curl -vvv -X POST -H "Content-Type: application/json" -H "X-custom-1: 1256" -H "X-correlationId: 45698094-2343948-2342342ex" -d "@A02.test-two.json" "http://localhost:8071/main/test-two?qp=1&qdata=simple"

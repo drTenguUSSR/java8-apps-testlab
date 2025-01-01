@@ -1,8 +1,0 @@
-================= database. work as postgres
-CREATE USER supply_warehouse WITH PASSWORD '234q586';
-CREATE DATABASE supply_warehouse_db01;
-ALTER DATABASE supply_warehouse_db01 OWNER TO supply_warehouse;
-??? GRANT ALL PRIVILEGES ON DATABASE your_database_name TO your_new_username;
-================== database. work as supply_warehouse
-CREATE SEQUENCE hibernate_sequence start 200
-================== ================== ==================

@@ -1,0 +1,23 @@
+run gradle with -D parametes
+https://stackoverflow.com/questions/23689054/problems-passing-system-properties-and-parameters-when-running-java-class-via-gr
+======================================================================
+https://docs.gradle.org/6.0/userguide/userguide.html
+
+#проверка статуса демона gradle
+gradle --status
+
+#Find Daemons
+jps
+
+#Disable for a project
+To disable the Daemon for all builds of a project, add org.gradle.daemon=false to the gradle.properties file in the project root.
+#Disable for a user
+%USERPROFILE%/.gradle/gradle.properties
+	org.gradle.daemon=false
+
+#Stop Daemon
+gradle --stop
+
+
+??set GRADLE_OPTS="-Dorg.gradle.daemon=false"
+Only Daemons for the current Gradle version are displayed. See https://docs.gradle.org/6.8.2/userguide/gradle_daemon.html#sec:status

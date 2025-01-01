@@ -1,0 +1,7 @@
+### custom
+/_local
+/config
+/logs
+/tmpFolder
+/workData
+/*.log

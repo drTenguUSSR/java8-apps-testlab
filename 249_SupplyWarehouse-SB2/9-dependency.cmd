@@ -1,0 +1,1 @@
+mvn dependency:tree >9-dependency.log
