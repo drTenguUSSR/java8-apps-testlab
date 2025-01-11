@@ -1,14 +1,17 @@
-/.gradle
+# IntelliJ Idea
 /.idea
+
+# project specific
+/description/*.bak
+/config
+/tmpFolder
+/logs/**
+
+# Gradle project-specific
+/.gradle
 /gradle
 /gradlew
 /gradlew.bat
-/description/*.bak
-/config
 
-# Ignore Gradle project-specific cache directory
-/.gradle
-/logs/**
-
-# Ignore Gradle build output directory
+# Gradle build output directory
 /build
