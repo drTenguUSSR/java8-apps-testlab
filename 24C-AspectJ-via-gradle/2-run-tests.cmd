@@ -1,1 +1,1 @@
-gradle :test --tests "sub.gradle.alone.AppTest" 
+gradle :test --tests "mil.teng24c.aspectj.gradle.AppTest"

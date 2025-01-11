@@ -44,7 +44,7 @@ dependencies {
 }
 
 application {
-    mainClass = "mil.teng.q2024.sub.gradle.alone.App"
+    mainClass = "mil.teng24c.aspectj.gradle.App"
 }
 
 jar {

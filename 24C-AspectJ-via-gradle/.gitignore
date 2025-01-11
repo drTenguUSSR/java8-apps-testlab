@@ -4,6 +4,7 @@
 /gradlew
 /gradlew.bat
 /description/*.bak
+/config
 
 # Ignore Gradle project-specific cache directory
 /.gradle

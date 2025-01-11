@@ -1,4 +1,4 @@
-package mil.teng.q2024.sub.gradle.alone;
+package mil.teng24c.aspectj.gradle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
