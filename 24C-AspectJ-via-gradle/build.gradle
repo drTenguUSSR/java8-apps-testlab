@@ -20,7 +20,6 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
     testImplementation "org.junit.jupiter:junit-jupiter:5.7.2"
 
     // This dependency is used by the application.
@@ -60,10 +59,31 @@ jar {
     }
 }
 
+tasks.register("helloTask") {
+    println 'gradle! Hello'
+}
+
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
+    useJUnitPlatform();
+    classpath += files('config')
+    println 'gradle! task-test'
 }
+
+tasks.named('run') {
+    classpath += files('config')
+
+    it.doFirst {
+        println 'gradle! doFirst'
+        systemProperty 'java.io.tmpdir', 'tmpFolder'
+        def x123=System.getProperty("var123")
+        systemProperty 'var123',x123+"-data"
+        println('gradle! var123='+System.getProperty("var123"));
+    }
+    println 'gradle! task-run, configure'
+}
+
+
 
 // use if compiler>=9
 //tasks.withType(JavaCompile) {

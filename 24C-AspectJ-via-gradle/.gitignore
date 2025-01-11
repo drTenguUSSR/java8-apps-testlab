@@ -3,6 +3,7 @@
 /gradle
 /gradlew
 /gradlew.bat
+/description/*.bak
 
 # Ignore Gradle project-specific cache directory
 /.gradle
