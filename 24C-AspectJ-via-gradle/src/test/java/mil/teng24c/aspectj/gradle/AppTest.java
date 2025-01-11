@@ -47,7 +47,16 @@ class AppTest {
     public void fastFail() {
         logger.debug("fastFail: debug");
         logger.warn("fastFail: warn");
-        String str1="aaa";
-        Assertions.assertEquals("wrong-string",str1);
+        String str1 = "aaa";
+        Assertions.assertEquals("wrong-string", str1);
+    }
+
+    @Test
+    public void checkPlainGetter() {
+        logger.error("checkPlainGetter on error"); //not work if test passed
+        UserLocalName data2 = new UserLocalName("first Data2", "last Data2", 102);
+        Assertions.assertEquals("first Data2", data2.getFirst());
+        Assertions.assertEquals("last Data2", data2.getLast());
+        Assertions.assertEquals(102, data2.getAge());
     }
 }
