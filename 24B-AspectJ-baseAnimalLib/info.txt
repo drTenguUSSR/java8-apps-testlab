@@ -1,11 +1,11 @@
-generate info: sub-prj-animals-by-classes
+generate info: aspectj.alib
 
 cmd: mvn archetype:generate
 1. select-id=2204
 2. version=1.5 (9)
-3. groupId=mil.teng.q2024
-4. artifactId=sub-prj-animals-by-classes
-5. package=mil.teng.q2024.animals4classes
+3. groupId=mil.teng24b
+4. artifactId=aspectj.alib
+5. package=mil.teng24b.aspectj.alib
 ==> java- compiler=17
 
 lib from:

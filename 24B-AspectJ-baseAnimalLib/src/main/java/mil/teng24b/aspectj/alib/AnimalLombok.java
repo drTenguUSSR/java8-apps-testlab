@@ -1,4 +1,4 @@
-package mil.teng.q2024.animals4classes;
+package mil.teng24b.aspectj.alib;
 
 import lombok.Data;
 import lombok.NonNull;

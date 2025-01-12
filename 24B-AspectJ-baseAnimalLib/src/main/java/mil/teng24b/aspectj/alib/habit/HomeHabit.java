@@ -1,4 +1,4 @@
-package mil.teng.q2024.animals4classes.habit;
+package mil.teng24b.aspectj.alib.habit;
 
 public interface HomeHabit {
     public String playingWoolBall(int ballSize, String bollColor);

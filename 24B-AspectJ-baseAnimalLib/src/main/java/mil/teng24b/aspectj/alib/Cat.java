@@ -1,6 +1,6 @@
-package mil.teng.q2024.animals4classes;
+package mil.teng24b.aspectj.alib;
 
-import mil.teng.q2024.animals4classes.habit.HomeHabit;
+import mil.teng24b.aspectj.alib.habit.HomeHabit;
 
 public class Cat extends Animal implements HomeHabit {
     private SoundToolObj soundToolObj=new SoundToolObj();
