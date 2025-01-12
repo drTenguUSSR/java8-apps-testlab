@@ -38,8 +38,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.16'
 
     // https://projectlombok.org
-    compileOnly "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    //compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    //annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
 }
 
@@ -64,7 +64,6 @@ tasks.register("helloTask") {
 }
 
 tasks.named('test') {
-    // Use JUnit Platform for unit tests.
     useJUnitPlatform();
     classpath += files('config')
     println 'gradle! task-test'
