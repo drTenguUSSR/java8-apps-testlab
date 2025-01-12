@@ -29,6 +29,9 @@ public class App {
         RunnerLombok runnerLombok = new RunnerLombok();
         runnerLombok.exec();
 
+        ExtCall24bAlib extCall24bAlib = new ExtCall24bAlib();
+        extCall24bAlib.exec();
+
         logger.debug("App end");
     }
 

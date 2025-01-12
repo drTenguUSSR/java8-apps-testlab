@@ -14,6 +14,7 @@ plugins {
 //compileJava.options.fork = true
 //compileJava.options.forkOptions.executable = '/path_to_javac'
 repositories {
+    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
     google()
@@ -36,6 +37,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation 'org.slf4j:slf4j-api:2.0.16'
+
+    //add deps 24b. mil.teng24b:aspectj.alib:1.0-SNAPSHOT
+    implementation 'mil.teng24b:aspectj.alib:1.0-SNAPSHOT'
 
     // https://projectlombok.org
     //compileOnly "org.projectlombok:lombok:${lombokVersion}"
