@@ -32,7 +32,9 @@ public class App {
         logger.debug("simpleStringConcat before");
         String res1 = extCall24bAlib.simpleStringConcat("msg1", "msg2");
         logger.debug("simpleStringConcat after. res={}",res1);
-        //extCall24bAlib.exec();
+        logger.debug("exec before");
+        extCall24bAlib.exec();
+        logger.debug("exec after");
 
         logger.debug("App end");
     }

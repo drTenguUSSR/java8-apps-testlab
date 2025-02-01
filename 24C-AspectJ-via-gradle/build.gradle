@@ -11,14 +11,10 @@ plugins {
     // Java 8 and are targeted at Gradle 6.7
     // https://docs.freefair.io/gradle-plugins/5.3.0/reference/#_system_requirements
     // https://mvnrepository.com/artifact/io.freefair.aspectj.post-compile-weaving/io.freefair.aspectj.post-compile-weaving.gradle.plugin?repo=gradle-plugins
-    //id("io.freefair.aspectj.post-compile-weaving") version "5.3.0"
-    id("io.freefair.aspectj") version "5.3.0"
+    id("io.freefair.aspectj.post-compile-weaving") version "5.3.0"
 }
 //compileJava.options.fork = true
 //compileJava.options.forkOptions.executable = '/path_to_javac'
-
-sourceSets.main.aspectj.srcDir "src/main/java"
-sourceSets.main.java.srcDirs = files()
 
 repositories {
     mavenLocal()
@@ -54,33 +50,7 @@ dependencies {
 
     implementation 'org.aspectj:aspectjrt:1.9.6'
     implementation "org.aspectj:aspectjweaver:1.9.6"
-
-//???
-    // https://stackoverflow.com/questions/58240637/post-compile-weaving-aspects-into-a-project-using-gradle
-    // https://dev.to/vishal_bhavsar/gradle-aspectj-junit5-testing-3b12
 }
-
-//post-compile-weaving
-//compileJava {
-//    ajc {
-//        enabled = true
-//        classpath.setFrom configurations.aspectj
-//        options {
-//            aspectpath.setFrom configurations.aspect
-//            compilerArgs = ["-Xlint:warning"]
-//        }
-//    }
-//}
-//compileTestJava {
-//    ajc {
-//        enabled = true
-//        classpath.setFrom configurations.aspectj
-//        options {
-//            aspectpath.setFrom configurations.testAspect
-//            compilerArgs = ["-Xlint:warning"]
-//        }
-//    }
-//}
 
 application {
     mainClass = "mil.teng24c.aspectj.gradle.App"
@@ -129,4 +99,3 @@ tasks.named('run') {
 //tasks.withType(JavaCompile) {
 //    options.release = 8
 //}
-

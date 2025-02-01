@@ -1,0 +1,39 @@
+---
+plugins:
+    id("io.freefair.aspectj") version "5.3.0"
+---
+!before repositories
+
+//id("io.freefair.aspectj")
+sourceSets.main.aspectj.srcDir "src/main/java"
+sourceSets.main.java.srcDirs = files()
+---
+//???
+    // https://stackoverflow.com/questions/58240637/post-compile-weaving-aspects-into-a-project-using-gradle
+    // https://dev.to/vishal_bhavsar/gradle-aspectj-junit5-testing-3b12
+
+----------- unused io.freefair.aspectj.post-compile-weaving
+//post-compile-weaving
+compileJava {
+    ajc {
+        enabled = true
+        classpath.setFrom configurations.aspectj
+        options {
+            aspectpath.setFrom configurations.aspect
+            compilerArgs = ["-Xlint:warning"]
+        }
+    }
+}
+compileTestJava {
+    ajc {
+        enabled = true
+        classpath.setFrom configurations.aspectj
+        options {
+            aspectpath.setFrom configurations.testAspect
+            compilerArgs = ["-Xlint:warning"]
+        }
+    }
+}
+----------- cook Enabling Load-Time Weaving
+https://www.baeldung.com/aspectj
+-----------
