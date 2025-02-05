@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 public class RunnerLombok {
     private static final Logger logger = LoggerFactory.getLogger(RunnerLombok.class);
     public void exec() {
-        logger.debug("RunnerLombok beg");
+        logger.debug("RunnerLombok-exec-beg");
         UserLocalName data1 = new UserLocalName();
         data1.setLast("last Data1");
         data1.setFirst("first Data1");
@@ -20,6 +20,6 @@ public class RunnerLombok {
         data2.setAge(103);
         logger.debug("data2-102={}",data2);
 
-        logger.debug("RunnerLombok end");
+        logger.debug("RunnerLombok-exec-end");
     }
 }

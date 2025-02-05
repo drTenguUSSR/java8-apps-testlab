@@ -1,5 +1,8 @@
 package mil.teng24c.aspectj.gradle;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,16 +28,27 @@ public class App {
             checkSystem.checkCreateTempFile();
         }
 
-        //RunnerLombok runnerLombok = new RunnerLombok();
-        //runnerLombok.exec();
+        RunnerLombok runnerLombok = new RunnerLombok();
+        runnerLombok.exec();
 
         ExtCall24bAlib extCall24bAlib = new ExtCall24bAlib();
         logger.debug("simpleStringConcat before");
         String res1 = extCall24bAlib.simpleStringConcat("msg1", "msg2");
-        logger.debug("simpleStringConcat after. res={}",res1);
+        logger.debug("simpleStringConcat after. res={}", res1);
         logger.debug("exec before");
         extCall24bAlib.exec();
         logger.debug("exec after");
+
+        //long call
+        logger.debug("work-beg");
+        Hasher dat1 = Hashing.md5().newHasher();
+        logger.debug("dat1.class={}",dat1.getClass().getCanonicalName());
+        dat1.putLong(100400L);
+        dat1.putLong(100200L);
+        HashCode resHash = dat1.hash();
+        logger.debug("work-end. valA={}",resHash);
+
+
 
         logger.debug("App end");
     }

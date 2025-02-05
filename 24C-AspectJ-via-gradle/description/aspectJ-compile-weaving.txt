@@ -36,4 +36,7 @@ compileTestJava {
 }
 ----------- cook Enabling Load-Time Weaving
 https://www.baeldung.com/aspectj
------------
+----------- show deprecation call on compile
+tasks.withType(JavaCompile) {
+    options.deprecation = true // or options.compilerArgs += ['-Xlint:deprecation']
+}

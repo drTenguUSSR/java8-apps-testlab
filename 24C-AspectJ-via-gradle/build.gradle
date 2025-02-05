@@ -45,8 +45,8 @@ dependencies {
     implementation 'mil.teng24b:aspectj.alib:1.0-SNAPSHOT'
 
     // https://projectlombok.org
-    //compileOnly "org.projectlombok:lombok:${lombokVersion}"
-    //annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     implementation 'org.aspectj:aspectjrt:1.9.6'
     implementation "org.aspectj:aspectjweaver:1.9.6"
@@ -68,10 +68,15 @@ jar {
     }
 }
 
+tasks.withType(JavaCompile) {
+    options.deprecation = true
+    options.warnings = true
+}
+
 tasks.register("helloTask") {
     println 'hello-beg'
-    println "cfg1=["+configurations.aspectj.getAll()+"]"
-    println "cfg2=["+aspectj.version.get()+"]"
+    println "cfg1=[" + configurations.aspectj.getAll() + "]"
+    println "cfg2=[" + aspectj.version.get() + "]"
     println 'hello-end'
 }
 
