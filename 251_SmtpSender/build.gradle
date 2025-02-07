@@ -1,0 +1,81 @@
+buildscript {
+    ext {
+        lombokVersion = '1.18.36'
+        log4jVersion = '2.23.1'
+    }
+}
+
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    gradlePluginPortal()
+    google()
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter:5.7.2"
+
+    // This dependency is used by the application.
+    implementation "com.google.guava:guava:30.1.1-jre"
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    implementation "org.apache.logging.log4j:log4j-api:2.23.1"
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    implementation "org.apache.logging.log4j:log4j-core:2.23.1"
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl
+    implementation "org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1"
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+
+    // https://projectlombok.org
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+}
+
+application {
+    mainClass = "mil.teng251.smtpsender.App"
+}
+
+jar {
+    manifest {
+        attributes(
+                "Main-Class": application.mainClass
+        )
+        baseName '251_SmtpSender'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.deprecation = true
+    options.warnings = true
+}
+
+tasks.named('test') {
+    useJUnitPlatform();
+    classpath += files('config')
+    println 'gradle! task-test'
+}
+
+tasks.named('run') {
+    classpath += files('config')
+
+    it.doFirst {
+        println 'gradle! doFirst'
+        systemProperty 'java.io.tmpdir', 'tmpFolder'
+        def x123 = System.getProperty("var123")
+        systemProperty 'var123', x123 + "-data"
+        println('gradle! var123=' + System.getProperty("var123"));
+    }
+    println 'gradle! task-run, configure'
+}
