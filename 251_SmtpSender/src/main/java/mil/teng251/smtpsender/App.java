@@ -33,7 +33,7 @@ import java.util.Properties;
  * rcpt.2=tratata@mail.ru
  * rcpt.3=mew@mail.ru
  * rcpt.4=gav@mail.ru
- *
+ * <p>
  * xxxx@yandex.ru - имя для аутентификации на SMTP сервере яндекса
  * zzzz - пароль приложения (регистрируется на в настройках почты яндекса)
  */
@@ -142,6 +142,8 @@ public class App {
             logger.debug("Message is ready. from={} toEmails={} subj={} authUser={}", mailFrom, toEmails, subject, authUser);
 
             Transport transport = session.getTransport("smtps");
+            //smtp.yandex.ru, 465 - worked (SSL)
+            //smtp.yandex.ru, 587 - err (TLS. plain response, await StartTLS)
             transport.connect("smtp.yandex.ru", 465, authUser, authPassword);
             logger.debug("transport-info: {}", transport);
             transport.sendMessage(msg, msg.getAllRecipients());

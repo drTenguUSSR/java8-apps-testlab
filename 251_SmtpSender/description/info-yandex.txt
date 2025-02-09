@@ -1,0 +1,26 @@
+connect to smtp.yandex.ru:587
+------
+DEBUG SMTP: trying to connect to host "smtp.yandex.ru", port 587, isSSL true
+javax.mail.MessagingException: Could not connect to SMTP host: smtp.yandex.ru, port: 587;
+  nested exception is:
+        javax.net.ssl.SSLException: Unrecognized SSL message, plaintext connection?
+        at com.sun.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:1934)
+        at com.sun.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:638)
+        at javax.mail.Service.connect(Service.java:295)
+        at mil.teng251.smtpsender.App.sendEmail(App.java:147)
+        at mil.teng251.smtpsender.App.main(App.java:88)
+Caused by: javax.net.ssl.SSLException: Unrecognized SSL message, plaintext connection?
+        at sun.security.ssl.InputRecord.handleUnknownRecord(InputRecord.java:710)
+        at sun.security.ssl.InputRecord.read(InputRecord.java:527)
+        at sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:983)
+        at sun.security.ssl.SSLSocketImpl.performInitialHandshake(SSLSocketImpl.java:1385)
+        at sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:1413)
+        at sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:1397)
+        at com.sun.mail.util.SocketFetcher.configureSSLSocket(SocketFetcher.java:507)
+        at com.sun.mail.util.SocketFetcher.getSocket(SocketFetcher.java:238)
+        at com.sun.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:1900)
+        ... 4 more
+2025-02-09 16:21:27.541 DEBUG homer4 --- [           main] m.t.s.App                                : App end
+------
+>telnet smtp.yandex.ru 587
+<220 mail-nwsmtp-smtp-production-main-74.vla.yp-c.yandex.net Ok 1739107471-VOpWbHNOeGk0
