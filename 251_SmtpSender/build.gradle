@@ -39,11 +39,11 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     // https://mvnrepository.com/artifact/javax.mail/mail
-    //implementation 'javax.mail:mail:1.4.4'
-    //implementation 'javax.mail:mail:1.4.7'
+    implementation 'javax.mail:mail:1.4.4'
+    implementation 'com.sun.mail:smtp:1.4.4'
 
-    implementation 'com.sun.mail:javax.mail:1.6.2'
-    implementation 'com.sun.mail:smtp:1.6.2'
+    //implementation 'com.sun.mail:javax.mail:1.6.2'
+    //implementation 'com.sun.mail:smtp:1.6.2'
 
 }
 
