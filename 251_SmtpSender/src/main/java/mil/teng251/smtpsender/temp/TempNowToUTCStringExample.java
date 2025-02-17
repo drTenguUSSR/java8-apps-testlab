@@ -22,12 +22,10 @@ public class TempNowToUTCStringExample {
         logger.warn("     res=!{}!", res);
         logger.warn("TempNowToUTCStringExample - end");
     }
-
-    private static DateTimeFormatter DATETIME_FORMATTER_ISO_ALT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     
     private static String nowToUTCString() {
         OffsetDateTime dtm = OffsetDateTime.now(ZoneOffset.UTC);
-        String output = DATETIME_FORMATTER_ISO_ALT.format(dtm);
+        String output = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dtm);
         return output;
     }
 }
