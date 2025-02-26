@@ -1,0 +1,17 @@
+# IntelliJ Idea
+/.idea
+
+# project specific
+/description/*.bak
+/config
+/tmpFolder
+/logs/**
+
+# Gradle project-specific
+/.gradle
+/gradle
+/gradlew
+/gradlew.bat
+
+# Gradle build output directory
+/build

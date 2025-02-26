@@ -1,0 +1,89 @@
+buildscript {
+    ext {
+        lombokVersion = '1.18.36'
+        log4jVersion = '2.23.1'
+    }
+}
+
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    gradlePluginPortal()
+    google()
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter:5.7.2"
+
+    // This dependency is used by the application.
+    implementation "com.google.guava:guava:30.1.1-jre"
+    //implementation "com.google.guava:guava:33.3.1-jre"
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    implementation "org.apache.logging.log4j:log4j-api:2.23.1"
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    implementation "org.apache.logging.log4j:log4j-core:2.23.1"
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl
+    implementation "org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1"
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+
+    // https://projectlombok.org
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // https://mvnrepository.com/artifact/javax.mail/mail
+    implementation 'javax.mail:mail:1.4.4'
+    implementation 'com.sun.mail:smtp:1.4.4'
+
+    //implementation 'com.sun.mail:javax.mail:1.6.2'
+    //implementation 'com.sun.mail:smtp:1.6.2'
+
+    //NTFS sub
+    implementation 'net.java.dev.jna:jna-platform:5.16.0'
+}
+
+application {
+    mainClass = "mil.teng251.codesnippets.App"
+}
+
+jar {
+    manifest {
+        attributes(
+                "Main-Class": application.mainClass
+        )
+        //baseName '251_SmtpSender'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.deprecation = true
+    options.warnings = true
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('test') {
+    useJUnitPlatform();
+    classpath += files('config')
+    println 'gradle! task-test'
+}
+
+tasks.named('run') {
+    classpath += files('config')
+
+    it.doFirst {
+        println 'gradle! doFirst'
+        systemProperty 'java.io.tmpdir', 'tmpFolder'
+    }
+    println 'gradle! task-run, configure'
+}
