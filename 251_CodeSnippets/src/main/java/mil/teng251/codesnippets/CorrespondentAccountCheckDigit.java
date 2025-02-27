@@ -1,0 +1,118 @@
+package mil.teng251.codesnippets;
+
+import com.google.common.base.Strings;
+import lombok.Value;
+import lombok.val;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * for IDE run: add VM options:
+ * -Dlog4j2.configurationFile=config/log4j2.xml
+ */
+public class CorrespondentAccountCheckDigit implements SnipExec{
+    private static final Logger logger = LoggerFactory.getLogger(CorrespondentAccountCheckDigit.class);
+    private static final int[] BASE_713 = {7, 1, 3};
+
+    //using:
+    //https://normativ.kontur.ru/document?moduleId=1&documentId=24444
+    //https://uralsib.ru/business/articles/rasshifrovka-raschetnogo-scheta
+    @Override
+    public void execute(String[] args) {
+        logger.debug("BankAccountNumberValidator - beg/2");
+        //БИК 044525491 принадлежит банку КУ ООО ПИР Банк - ГК "АСВ"
+
+        List<FullAccountTestInfo> testData = Arrays.asList(
+                //https://keysystems.ru/files/fo/arm_budjet/show_docum/BKS/onlinehelp/index.html?ro_kr_algor_klyuch_korr_schet.htm
+                //Коррсчет 30101810900000000746 .  Счет открыт в РКЦ, имеющем БИК 049805000. (9) must-fail
+                //проверки https://www.iban.ru/proverka-scheta
+                new FullAccountTestInfo("049805000", "30101810900000000746", false, "X")
+                , new FullAccountTestInfo("049805000", "30101810800000000746", true, "8")
+                , new FullAccountTestInfo("044525491", "40817810610000043893", true, "0")
+                , new FullAccountTestInfo("044525491",  "40817810610000043894", false, "0")
+        );
+
+        for (val testVal : testData) {
+            logger.debug("---------- test={}", testVal);
+            if (doValidate(testVal.bik, testVal.account)) {
+                logger.debug("bik={} account={} valid code", testVal.bik, testVal.account);
+                if (!testVal.resValid) {
+                    throw new IllegalStateException("check must be valid");
+                }
+            } else {
+                if (!"X".equals(testVal.resKey)) {
+                    String key2 = doKeyCalc(testVal.bik, testVal.account);
+                    logger.debug("bik={} account={} INvalid code. recalcKey={}. mustResult={}"
+                            , testVal.bik, testVal.account, key2, replaceAccountKeycode(testVal.account, key2));
+                    if (testVal.resValid) {
+                        throw new IllegalStateException("check must NOT be valid");
+                    }
+                }
+            }
+        }
+
+
+        logger.debug("BankAccountNumberValidator - end");
+    }
+
+    private static String doKeyCalc(String bik, String account) {
+
+        if (Strings.isNullOrEmpty(bik) || bik.length() != 9) {
+            throw new IllegalArgumentException("BIK is null/empty or wrong format. BIK.len must be 9. got=[" + bik + "]");
+        }
+        if (Strings.isNullOrEmpty(account) || account.length() != 20) {
+            throw new IllegalArgumentException("account is null/empty or wrong format. BIK.len must be 20. got=[" + bik + "]");
+        }
+
+        String bikSub = "0" + bik.substring(4, 6); //разряды 5 и 6.
+        String fullNumber = bikSub + replaceAccountKeycode(account, "0");
+        String controlKeyA = account.substring(8, 9); //разряд 9
+        logger.debug("doKeyCalc: bikSub={} controlKey={} fullNumber=!{}!", bikSub, controlKeyA, fullNumber);
+        int checkSum = 0;
+        for (int i1 = 0; i1 < fullNumber.length(); i1++) {
+            int dat = Integer.parseInt(fullNumber.substring(i1, i1 + 1));
+            checkSum += dat * BASE_713[i1 % 3];
+        }
+        int controlKeyB = ((checkSum % 10) * 3) % 10;
+        logger.debug("done. checksum={} controlKeyB={}", checkSum, controlKeyB);
+        return String.valueOf(controlKeyB);
+    }
+
+    private static boolean doValidate(String bik, String account) {
+
+        if (Strings.isNullOrEmpty(bik) || bik.length() != 9) {
+            throw new IllegalArgumentException("BIK is null/empty or wrong format. BIK.len must be 9. got=[" + bik + "]");
+        }
+        if (Strings.isNullOrEmpty(account) || account.length() != 20) {
+            throw new IllegalArgumentException("account is null/empty or wrong format. BIK.len must be 20. got=[" + bik + "]");
+        }
+
+        String bikSub = "0" + bik.substring(4, 6); //разряды 5 и 6.
+        String fullNumber = bikSub + account;
+        String controlKey = account.substring(8, 9); //разряд 9
+        logger.debug("doValidate: bikSub={} controlKey={} fullNumber=!{}!", bikSub, controlKey, fullNumber);
+        int checkSum = 0;
+        for (int i1 = 0; i1 < fullNumber.length(); i1++) {
+            int dat = Integer.parseInt(fullNumber.substring(i1, i1 + 1));
+            checkSum += dat * BASE_713[i1 % 3];
+        }
+        boolean isValid = checkSum % 10 == 0;
+        logger.debug("done. checksum={} isValid={}", checkSum, isValid);
+        return isValid;
+    }
+
+    static String replaceAccountKeycode(String account, String newKey) {
+        return account.substring(0, 8) + newKey + account.substring(9);
+    }
+
+    @Value
+    static class FullAccountTestInfo {
+        String bik;
+        String account;
+        boolean resValid;
+        String resKey;
+    }
+}
