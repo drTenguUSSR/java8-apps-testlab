@@ -22,6 +22,11 @@
 
 - NowToUTCString - быстрое, потокобезопасное форматирование "сейчас" в UTC строку
 
+- CorrespondentAccountCheckDigit - реализация "Порядок расчета контрольного ключа 
+в номере лицевого счета" (ЦБ РФ, N 515, от 8 сентября 1997 г.)
+html версия см.
+https://drtenguussr.github.io/html-demo-apps/251.corr-account/CorrAccCheck.html
+
 ## [251_SmtpSender](251_SmtpSender)
 
 Консольное приложение отправки почты в несколько адресов.
