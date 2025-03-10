@@ -21,6 +21,7 @@ dependencies {
 
     // This dependency is used by the application.
     implementation "com.google.guava:guava:30.1.1-jre"
+    //implementation "com.google.guava:guava:33.3.1-jre"
 
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
     implementation "org.apache.logging.log4j:log4j-api:2.23.1"
@@ -45,6 +46,8 @@ dependencies {
     //implementation 'com.sun.mail:javax.mail:1.6.2'
     //implementation 'com.sun.mail:smtp:1.6.2'
 
+    //NTFS sub
+    implementation 'net.java.dev.jna:jna-platform:5.16.0'
 }
 
 application {
@@ -66,6 +69,7 @@ jar {
 tasks.withType(JavaCompile) {
     options.deprecation = true
     options.warnings = true
+    options.encoding = 'UTF-8'
 }
 
 tasks.named('test') {
