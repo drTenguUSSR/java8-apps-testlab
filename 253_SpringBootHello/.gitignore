@@ -1,5 +1,6 @@
-gradlew
-gradlew.bat
+/gradlew
+/gradlew.bat
+/gradle
 /.gradle
 /build
 !**/src/main/**/build/
