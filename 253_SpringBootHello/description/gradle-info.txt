@@ -1,0 +1,15 @@
+kill gradle daemons
+WMIC PROCESS where "Name like 'java%' AND CommandLine like '%GradleDaemon%'" Call Terminate
+gradlew --stop
+gradle --stop
+
+generate folder ".gradle", "gradle" for specific version gradle
+	gradle wrapper --gradle-version=6.8.3
+
+generate folder ".gradle", "gradle" for build.gradle/wrapper/gradleVersion
+	gradle wrapper
+
+all daemons:
+	D:\MyDocs-Gradle-cache\daemon\
+wrappers-bin:
+	D:\MyDocs-Gradle-cache\wrapper\dists\
