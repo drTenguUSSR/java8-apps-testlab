@@ -15,20 +15,14 @@ Spring Boot: 3.3.9
 Packaging: Jar
 Java: 17
 
-+deps: Spring Web
++dependencies: Spring Web
 
-## Current runtime
+## Build tools by docs
 
-Java 17, Gradle 6.8.2
+[https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/getting-started.html](https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/getting-started.html)
+Spring Boot 2.7.18 requires Java 8 and is compatible up to and including Java 21. 
+Spring Framework 5.3.31 or above is also required.
+Gradle 6.8.x, 6.9.x, 7.x, and 8.x
 
-## Expected runtime
-
-[https://docs.spring.io/spring-boot/docs/2.5.1/reference/html/getting-started.html](https://docs.spring.io/spring-boot/docs/2.5.1/reference/html/getting-started.html)
-
+## Build tools used
 Java 8, Gradle 6.8.2
-
-## Todo fixup build
-
-Unsupported class file major version 61
-[https://rollbar.com/blog/unsupported-class-file-major-version-61-error-in-java/](https://rollbar.com/blog/unsupported-class-file-major-version-61-error-in-java/)
-[https://stackoverflow.com/questions/67079327/how-can-i-fix-unsupported-class-file-major-version-60-in-intellij-idea](https://stackoverflow.com/questions/67079327/how-can-i-fix-unsupported-class-file-major-version-60-in-intellij-idea)
