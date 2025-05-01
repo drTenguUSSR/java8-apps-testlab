@@ -28,23 +28,24 @@ public class App {
 
         logger.debug("app-beg");
         Options options = new Options();
-        Option config = Option.builder("r").longOpt("run")
-                .argName("run")
+        Option config = Option.builder("snip")
+                .longOpt("snippetName")
+                .numberOfArgs(1)
                 .hasArg()
                 .required(true)
-                .desc("exec one snippet:"+getSnips())
+                .desc("snippet:" + getSnips())
                 .build();
         options.addOption(config);
 
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine commandLine = parser.parse(options, args);
-            String snipName = commandLine.getOptionValue("r");
-            logger.debug("snipName={}", snipName);
-            if (!SNIPP_MAP.containsKey(snipName)) {
+            String snippetName = commandLine.getOptionValue("snippetName");
+            logger.debug("snippetName={}", snippetName);
+            if (!SNIPP_MAP.containsKey(snippetName)) {
                 printHelp(options);
             }
-            SnipExec handler = SNIPP_MAP.get(snipName);
+            SnipExec handler = SNIPP_MAP.get(snippetName);
             handler.execute(args);
         } catch (ParseException ex) {
             printHelp(options);
@@ -62,7 +63,7 @@ public class App {
         List<String> m1 = SNIPP_MAP.entrySet().stream()
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        return String.join(",", m1);
+        return String.join(", ", m1);
     }
 
 }

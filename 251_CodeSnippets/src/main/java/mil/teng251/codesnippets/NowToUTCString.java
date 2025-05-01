@@ -10,6 +10,11 @@ import java.time.format.DateTimeFormatter;
 /**
  * https://docs.oracle.com/javase/8/docs/api/java/time/Clock.html
  * The clock implementation provided here is based on System.currentTimeMillis().
+ * for IDE run:
+ * VM options:
+ *  -Djava.io.tmpdir=tmpFolder -Dlog4j2.configurationFile=config/log4j2.xml
+ * run argument:
+ *  run --args="-snippetName=utc"
  */
 public class NowToUTCString implements SnipExec {
     private static final Logger log = LoggerFactory.getLogger(NowToUTCString.class);

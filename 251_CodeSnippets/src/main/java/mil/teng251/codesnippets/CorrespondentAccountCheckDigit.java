@@ -11,7 +11,10 @@ import java.util.List;
 
 /**
  * for IDE run: add VM options:
- * -Dlog4j2.configurationFile=config/log4j2.xml
+ * VM options:
+ *  -Djava.io.tmpdir=tmpFolder -Dlog4j2.configurationFile=config/log4j2.xml
+ * run argument:
+ *  run --args="-snippetName=account-check"
  */
 public class CorrespondentAccountCheckDigit implements SnipExec {
     private static final Logger log = LoggerFactory.getLogger(CorrespondentAccountCheckDigit.class);

@@ -12,14 +12,10 @@ public class FileStreamNTFS {
     private static final Logger logger = LoggerFactory.getLogger(FileStreamNTFS.class);
 
     public static void main(String[] args) {
-        logger.warn("FileStreamNTFS - beg/2");
-        //String path = "D:\\INS\\demo-ntfs-file-streams\\simple.txt";
-        String path = "D:\\INS\\demo-ntfs-file-streams\\bravo.txt";
-        dumpStreams(path);
-        logger.warn("FileStreamNTFS - end");
+
     }
 
-    private static void dumpStreams(String path) {
+    public static void dumpStreams(String path) {
         Kernel32 kernel32;
         NtOsKrnl ntOsKrnl;
         try {
