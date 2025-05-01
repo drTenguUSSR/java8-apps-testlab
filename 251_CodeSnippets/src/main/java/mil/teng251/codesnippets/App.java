@@ -1,12 +1,14 @@
 package mil.teng251.codesnippets;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.var;
+import mil.teng251.codesnippets.ntfs.NtfsStreamsInfo;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * run via ide: run configuration/VM options:
@@ -18,6 +20,7 @@ public class App {
     private static final Map<String, SnipExec> SNIPP_MAP = ImmutableMap.of(
             "utc", new NowToUTCString()
             , "account-check", new CorrespondentAccountCheckDigit()
+            , "ntfs-streams-info", new NtfsStreamsInfo()
     );
 
     public static void main(String[] args) {
@@ -29,7 +32,8 @@ public class App {
                 .argName("run")
                 .hasArg()
                 .required(true)
-                .desc("exec one snippet").build();
+                .desc("exec one snippet:"+getSnips())
+                .build();
         options.addOption(config);
 
         CommandLineParser parser = new DefaultParser();
@@ -50,15 +54,15 @@ public class App {
     }
 
     private static void printHelp(Options options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("available snippets is:");
-        for (var dat : SNIPP_MAP.entrySet()) {
-            sb.append(dat.getKey()).append(",");
-        }
-        String sbStr = sb.toString();
-        sbStr = sbStr.substring(0, sbStr.length() - 1) + "\r\n\r\n";
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("java -jar Client.jar <option> <arguments>", sbStr, options, "--- ---");
+        formatter.printHelp("java -jar Client.jar <option> <arguments>", "--- ---", options, "--- ---");
+    }
+
+    private static String getSnips() {
+        List<String> m1 = SNIPP_MAP.entrySet().stream()
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        return String.join(",", m1);
     }
 
 }

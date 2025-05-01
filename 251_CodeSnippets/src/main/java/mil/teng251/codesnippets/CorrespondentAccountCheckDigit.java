@@ -14,7 +14,7 @@ import java.util.List;
  * -Dlog4j2.configurationFile=config/log4j2.xml
  */
 public class CorrespondentAccountCheckDigit implements SnipExec {
-    private static final Logger logger = LoggerFactory.getLogger(CorrespondentAccountCheckDigit.class);
+    private static final Logger log = LoggerFactory.getLogger(CorrespondentAccountCheckDigit.class);
     private static final int[] BASE_713 = {7, 1, 3};
 
     private static String doKeyCalc(String bik, String account) {
@@ -29,14 +29,14 @@ public class CorrespondentAccountCheckDigit implements SnipExec {
         String bikSub = "0" + bik.substring(4, 6); //разряды 5 и 6.
         String fullNumber = bikSub + replaceAccountKeycode(account, "0");
         String controlKeyA = account.substring(8, 9); //разряд 9
-        logger.debug("doKeyCalc: bikSub={} controlKey={} fullNumber=!{}!", bikSub, controlKeyA, fullNumber);
+        log.debug("doKeyCalc: bikSub={} controlKey={} fullNumber=!{}!", bikSub, controlKeyA, fullNumber);
         int checkSum = 0;
         for (int i1 = 0; i1 < fullNumber.length(); i1++) {
             int dat = Integer.parseInt(fullNumber.substring(i1, i1 + 1));
             checkSum += dat * BASE_713[i1 % 3];
         }
         int controlKeyB = ((checkSum % 10) * 3) % 10;
-        logger.debug("done. checksum={} controlKeyB={}", checkSum, controlKeyB);
+        log.debug("done. checksum={} controlKeyB={}", checkSum, controlKeyB);
         return String.valueOf(controlKeyB);
     }
 
@@ -52,14 +52,14 @@ public class CorrespondentAccountCheckDigit implements SnipExec {
         String bikSub = "0" + bik.substring(4, 6); //разряды 5 и 6.
         String fullNumber = bikSub + account;
         String controlKey = account.substring(8, 9); //разряд 9
-        logger.debug("doValidate: bikSub={} controlKey={} fullNumber=!{}!", bikSub, controlKey, fullNumber);
+        log.debug("doValidate: bikSub={} controlKey={} fullNumber=!{}!", bikSub, controlKey, fullNumber);
         int checkSum = 0;
         for (int i1 = 0; i1 < fullNumber.length(); i1++) {
             int dat = Integer.parseInt(fullNumber.substring(i1, i1 + 1));
             checkSum += dat * BASE_713[i1 % 3];
         }
         boolean isValid = checkSum % 10 == 0;
-        logger.debug("done. checksum={} isValid={}", checkSum, isValid);
+        log.debug("done. checksum={} isValid={}", checkSum, isValid);
         return isValid;
     }
 
@@ -72,7 +72,7 @@ public class CorrespondentAccountCheckDigit implements SnipExec {
     //https://uralsib.ru/business/articles/rasshifrovka-raschetnogo-scheta
     @Override
     public void execute(String[] args) {
-        logger.debug("BankAccountNumberValidator - beg/2");
+        log.debug("BankAccountNumberValidator - beg/2");
         //БИК 044525491 принадлежит банку КУ ООО ПИР Банк - ГК "АСВ"
 
         List<FullAccountTestInfo> testData = Arrays.asList(
@@ -88,16 +88,16 @@ public class CorrespondentAccountCheckDigit implements SnipExec {
         );
 
         for (val testVal : testData) {
-            logger.debug("---------- test={}", testVal);
+            log.debug("---------- test={}", testVal);
             if (doValidate(testVal.bik, testVal.account)) {
-                logger.debug("bik={} account={} valid code", testVal.bik, testVal.account);
+                log.debug("bik={} account={} valid code", testVal.bik, testVal.account);
                 if (!testVal.resValid) {
                     throw new IllegalStateException("check must be valid");
                 }
             } else {
                 if (!"X".equals(testVal.resKey)) {
                     String key2 = doKeyCalc(testVal.bik, testVal.account);
-                    logger.debug("bik={} account={} INvalid code. recalcKey={}. mustResult={}"
+                    log.debug("bik={} account={} INvalid code. recalcKey={}. mustResult={}"
                             , testVal.bik, testVal.account, key2, replaceAccountKeycode(testVal.account, key2));
                     if (testVal.resValid) {
                         throw new IllegalStateException("check must NOT be valid");
@@ -107,7 +107,7 @@ public class CorrespondentAccountCheckDigit implements SnipExec {
         }
 
 
-        logger.debug("BankAccountNumberValidator - end");
+        log.debug("BankAccountNumberValidator - end");
     }
 
     @Value

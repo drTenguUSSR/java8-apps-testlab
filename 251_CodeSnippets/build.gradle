@@ -45,6 +45,8 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-cli/commons-cli
     implementation 'commons-cli:commons-cli:1.9.0'
 
+    //NTFS sub
+    implementation 'net.java.dev.jna:jna-platform:5.16.0'
 }
 
 application {

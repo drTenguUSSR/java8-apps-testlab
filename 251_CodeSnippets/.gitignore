@@ -1,3 +1,9 @@
+/.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
 # IntelliJ Idea
 /.idea
 
@@ -6,12 +12,3 @@
 /config
 /tmpFolder
 /logs/**
-
-# Gradle project-specific
-/.gradle
-/gradle
-/gradlew
-/gradlew.bat
-
-# Gradle build output directory
-/build
