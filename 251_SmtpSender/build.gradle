@@ -46,8 +46,6 @@ dependencies {
     //implementation 'com.sun.mail:javax.mail:1.6.2'
     //implementation 'com.sun.mail:smtp:1.6.2'
 
-    //NTFS sub
-    implementation 'net.java.dev.jna:jna-platform:5.16.0'
 }
 
 application {

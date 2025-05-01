@@ -1,7 +1,6 @@
 package mil.teng251.smtpsender;
 
 import com.google.common.base.Strings;
-import mil.teng251.smtpsender.temp.BankAccountNumberValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +42,7 @@ public class App {
     private static final DateTimeFormatter DATETIME_STAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     public static boolean debug_env = false;
 
-    //temp code
     public static void main(String[] args) throws IOException {
-        BankAccountNumberValidator.main(args);
-    }
-
-    public static void main2(String[] args) throws IOException {
         logger.debug("App begin/008");
         logger.debug("system-temp: {}", System.getProperty("java.io.tmpdir"));
 
