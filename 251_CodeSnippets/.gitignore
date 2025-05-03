@@ -4,8 +4,11 @@
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-# IntelliJ Idea
+### IntelliJ IDEA ###
 /.idea
+/*.iws
+/*.iml
+/*.ipr
 
 # project specific
 /description/*.bak

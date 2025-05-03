@@ -1,5 +1,7 @@
 package mil.teng251.codesnippets.ntfs;
 
+import com.sun.jna.Memory;
+import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.platform.win32.WinNT;
@@ -10,71 +12,96 @@ import java.nio.charset.StandardCharsets;
 
 public class FileStreamNTFS {
     private static final Logger logger = LoggerFactory.getLogger(FileStreamNTFS.class);
+    //read data
+    //https://github.com/codelibs/jcifs/blob/master/src/main/java/jcifs/smb1/smb1/Trans2FindFirst2Response.java
+    private static final boolean useUnicode = true;
 
     public static void main(String[] args) {
 
     }
 
     public static void dumpStreams(String path) {
-        Kernel32 kernel32;
-        NtOsKrnl ntOsKrnl;
-        try {
-            kernel32 = Kernel32.INSTANCE;
-            ntOsKrnl = NtOsKrnl.INSTANCE;
-        } catch (Throwable t) {
-            logger.warn("Throwable {}", t);
-            return;
-        }
-
+        WinNT.HANDLE handle = null;
         try {
             //String name = "\\\\?\\" + path;
             String name = path;
-            WinNT.HANDLE handle = kernel32.CreateFile(name, 0, NtOsKrnl.FILE_SHARE_ALL, null, WinNT.OPEN_EXISTING, WinNT.FILE_FLAG_BACKUP_SEMANTICS, null);
+            handle = Kernel32.INSTANCE.CreateFile(name
+                    , WinNT.GENERIC_READ
+                    , NtOsKrnl.FILE_SHARE_ALL
+                    , null
+                    , WinNT.OPEN_EXISTING
+                    , WinNT.FILE_FLAG_BACKUP_SEMANTICS // or 0?
+                    , null);
             if (handle == WinBase.INVALID_HANDLE_VALUE) {
-                throw new RuntimeException("CreateFile(" + path + "): 0x" + Integer.toHexString(kernel32.GetLastError()));
+                throw new RuntimeException("CreateFile(" + path + "): 0x" + Integer.toHexString(Kernel32.INSTANCE.GetLastError()));
             }
-            logger.debug("win32-handle={}",handle);
-//            NtOsKrnl.FILE_CASE_SENSITIVE_INFORMATION_P fileInformation = new NtOsKrnl.FILE_CASE_SENSITIVE_INFORMATION_P();
-//            int result = ntOsKrnl.NtQueryInformationFile(
-//                    handle,
-//                    new NtOsKrnl.IO_STATUS_BLOCK_P(),
-//                    fileInformation,
-//                    fileInformation.size(),
-//                    NtOsKrnl.FileCaseSensitiveInformation);
+            logger.debug("win32-handle={}", handle);
 
-            NtOsKrnl.FILE_STREAM_INFORMATION_P fileInformation = new NtOsKrnl.FILE_STREAM_INFORMATION_P();
-            int result = ntOsKrnl.NtQueryInformationFile(
+            int bufferSize = 1024;
+            Memory buffer = new Memory(bufferSize);
+            NtOsKrnl.IoStatusBlock ioStatus = new NtOsKrnl.IoStatusBlock();
+
+            int resultNtQuery = NtOsKrnl.INSTANCE.NtQueryInformationFile(
                     handle,
-                    new NtOsKrnl.IO_STATUS_BLOCK_P(),
-                    fileInformation,
-                    fileInformation.size(),
+                    ioStatus,
+                    buffer,
+                    buffer.size(),
                     NtOsKrnl.FileStreamInformation);
 
-            kernel32.CloseHandle(handle);
-            logger.debug("result={}",result);
-            logger.debug("fileInfo.NextEntryOffset={}",fileInformation.NextEntryOffset);
-            logger.debug("fileInfo.StreamNameLength={}",fileInformation.StreamNameLength);
-            logger.debug("fileInfo.StreamSize={}",fileInformation.StreamSize);
-            logger.debug("fileInfo.StreamAllocationSize={}",fileInformation.StreamAllocationSize);
-            logger.debug("fileInfo.StreamName={}",fileInformation.StreamName);
+            logger.debug("resultNtQuery={} ioStatus.Information={} ptr.size={}"
+                    , resultNtQuery
+                    , ioStatus.Information.longValue()
+                    , Native.POINTER_SIZE
+            );
 
+            //STATUS_INFO_LENGTH_MISMATCH(0xc0000004).
+//            if (resultNtQuery == WinError.STATUS_INFO_LENGTH_MISMATCH || result == WinError.STATUS_BUFFER_OVERFLOW) {
+//                // Increase the buffer size and try again
+//                bufferSize *= 2;
+//                buffer = new Memory(bufferSize);
+//                continue;
+//            }
 
-            if (result != 0) {
+            if (resultNtQuery != 0) {
                 // https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/596a1078-e883-4972-9bbc-49e60bebca55
-                if (logger.isDebugEnabled())
-                    logger.debug("NtQueryInformationFile(" + path + "): 0x" + Integer.toHexString(result));
+                logger.debug("resultNtQuery: NtQueryInformationFile({}): 0x{}", path, Integer.toHexString(resultNtQuery));
+                return;
             }
-//            else if (fileInformation.Flags == 0) {
-//                return FileAttributes.CaseSensitivity.INSENSITIVE;
-//            }
-//            else if (fileInformation.Flags == 1) {
-//                return FileAttributes.CaseSensitivity.SENSITIVE;
-//            }
-            else {
-                logger.warn("NtQueryInformationFile(" + path + "): unexpected {}",result);
+            long offset = 0;
+            logger.debug("fileInfo.size={}", (new NtOsKrnl.FileStreamFullInfo_M0()).size());
+
+            while (offset < ioStatus.Information.longValue()) {
+                NtOsKrnl.FileStreamFullInfo_M0 fileInfo = new NtOsKrnl.FileStreamFullInfo_M0();
+                fileInfo.load(buffer.share(offset));
+                logger.debug("offset={}. fileInfo.size={}. streamName.len={} nextOffset={}", offset, fileInfo.size(), fileInfo.StreamNameLength, fileInfo.NextEntryOffset);
+
+                if (fileInfo.NextEntryOffset == 0) {
+                    logger.debug("fileInfo.NextEntryOffset is 0. break");
+                    break;
+                }
+// add read stream flags
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_stream_information
+//                int streamNameLength = buffer.getShort(offset + 0) & 0xFFFF; // Length of the stream name
+//                int streamSize = buffer.getInt(offset + 8); // Size of the stream
+//                int streamFlags = buffer.getInt(offset + 12); // Flags
+                if (fileInfo.StreamNameLength > 0) {
+                    // Convert char[] to String, considering UTF-16 encoding
+                    String strData = "name:'" + new String(fileInfo.StreamName, 0, fileInfo.StreamNameLength / 2) + "'"
+                            + " , length:" + fileInfo.StreamSize;
+                    //stream with name='::$DATA' - main data
+                    logger.debug("stream: {}", strData.trim());
+                }
+
+                offset += fileInfo.NextEntryOffset;
+                logger.debug("next-offset={}", offset);
             }
+
         } catch (Throwable t) {
             logger.warn("path: " + path, t);
+        } finally {
+            if (handle != null && !handle.equals(WinBase.INVALID_HANDLE_VALUE)) {
+                Kernel32.INSTANCE.CloseHandle(handle);
+            }
         }
 
         return;
@@ -83,10 +110,6 @@ public class FileStreamNTFS {
 
     }
 
-
-    //read data
-    //https://github.com/codelibs/jcifs/blob/master/src/main/java/jcifs/smb1/smb1/Trans2FindFirst2Response.java
-    private static final boolean useUnicode=true;
     String readString(byte[] src, int srcIndex, int len) {
         String str = null;
         if (useUnicode) {
