@@ -24,6 +24,8 @@ public class NtfsStreamsInfo implements SnipExec {
 
         //String path = "D:\\INS\\demo-ntfs-file-streams\\simple.txt";
         String path = "D:\\INS\\demo-ntfs-file-streams\\bravo.txt";
+        //String path = "D:\\INS\\demo-ntfs-file-streams\\FirefoxPortable32-70.0.1.zip";
+        //String path = "D:\\INS\\demo-ntfs-file-streams\\downloaded-from-internet.pdf";
         String pathBase = args[1];
         
         log.debug("show steams for pathBase={} toFile={}",pathBase,path);

@@ -4,27 +4,29 @@ import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinBase;
+import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FileStreamNTFS {
     private static final Logger logger = LoggerFactory.getLogger(FileStreamNTFS.class);
-    //read data
-    //https://github.com/codelibs/jcifs/blob/master/src/main/java/jcifs/smb1/smb1/Trans2FindFirst2Response.java
     private static final boolean useUnicode = true;
-
-    public static void main(String[] args) {
-
-    }
+    private static final DateTimeFormatter TEMP_FILENAME_DTM = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss.SSS");
 
     public static void dumpStreams(String path) {
         WinNT.HANDLE handle = null;
         try {
-            //String name = "\\\\?\\" + path;
-            String name = path;
+            String name = "\\\\?\\" + path;
+            //String name = path;
             handle = Kernel32.INSTANCE.CreateFile(name
                     , WinNT.GENERIC_READ
                     , NtOsKrnl.FILE_SHARE_ALL
@@ -46,16 +48,20 @@ public class FileStreamNTFS {
                     ioStatus,
                     buffer,
                     buffer.size(),
-                    NtOsKrnl.FileStreamInformation);
+                    NtOsKrnl.NTQUERYINFORMATIONFILE_FILESTREAMINFORMATION);
 
-            logger.debug("resultNtQuery={} ioStatus.Information={} ptr.size={}"
-                    , resultNtQuery
-                    , ioStatus.Information.longValue()
+            logger.debug("resultNtQuery={} ioStatus.status={} ioStatus.Information={} ptr.size={} long.size={}"
+                    , String.format("0x%H", resultNtQuery)
+                    , String.format("0x%H", ioStatus.Status)
+                    , ioStatus.Information.intValue()
                     , Native.POINTER_SIZE
+                    , WinDef.LONG.SIZE
             );
 
-            //STATUS_INFO_LENGTH_MISMATCH(0xc0000004).
-//            if (resultNtQuery == WinError.STATUS_INFO_LENGTH_MISMATCH || result == WinError.STATUS_BUFFER_OVERFLOW) {
+            dumpBufferToBinFile(buffer, ioStatus.Information.intValue(), "dump-", ".bin");
+
+
+//            if (resultNtQuery == NtOsKrnl.STATUS_INFO_LENGTH_MISMATCH || resultNtQuery == NtOsKrnl.STATUS_BUFFER_OVERFLOW) {
 //                // Increase the buffer size and try again
 //                bufferSize *= 2;
 //                buffer = new Memory(bufferSize);
@@ -63,33 +69,34 @@ public class FileStreamNTFS {
 //            }
 
             if (resultNtQuery != 0) {
-                // https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/596a1078-e883-4972-9bbc-49e60bebca55
                 logger.debug("resultNtQuery: NtQueryInformationFile({}): 0x{}", path, Integer.toHexString(resultNtQuery));
                 return;
             }
             long offset = 0;
-            logger.debug("fileInfo.size={}", (new NtOsKrnl.FileStreamFullInfo_M0()).size());
+            logger.debug("fileInfo.size={}", (new NtOsKrnl.FileStreamFullInfo()).size());
 
             while (offset < ioStatus.Information.longValue()) {
-                NtOsKrnl.FileStreamFullInfo_M0 fileInfo = new NtOsKrnl.FileStreamFullInfo_M0();
+                NtOsKrnl.FileStreamFullInfo fileInfo = new NtOsKrnl.FileStreamFullInfo();
                 fileInfo.load(buffer.share(offset));
-                logger.debug("offset={}. fileInfo.size={}. streamName.len={} nextOffset={}", offset, fileInfo.size(), fileInfo.StreamNameLength, fileInfo.NextEntryOffset);
+                logger.debug("offset={}. streamName.len={} bytes. nextOffset={}", offset, fileInfo.StreamNameLength, fileInfo.NextEntryOffset);
 
-                if (fileInfo.NextEntryOffset == 0) {
-                    logger.debug("fileInfo.NextEntryOffset is 0. break");
-                    break;
-                }
 // add read stream flags
 // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_stream_information
 //                int streamNameLength = buffer.getShort(offset + 0) & 0xFFFF; // Length of the stream name
 //                int streamSize = buffer.getInt(offset + 8); // Size of the stream
 //                int streamFlags = buffer.getInt(offset + 12); // Flags
+
                 if (fileInfo.StreamNameLength > 0) {
                     // Convert char[] to String, considering UTF-16 encoding
                     String strData = "name:'" + new String(fileInfo.StreamName, 0, fileInfo.StreamNameLength / 2) + "'"
-                            + " , length:" + fileInfo.StreamSize;
+                            + " , data-length:" + fileInfo.StreamSize;
                     //stream with name='::$DATA' - main data
                     logger.debug("stream: {}", strData.trim());
+                }
+
+                if (fileInfo.NextEntryOffset == 0) {
+                    logger.debug("fileInfo.NextEntryOffset is 0. break");
+                    break;
                 }
 
                 offset += fileInfo.NextEntryOffset;
@@ -109,6 +116,18 @@ public class FileStreamNTFS {
 //one,two,three:     60129542184,fileInfo-2=58
 
     }
+
+    private static void dumpBufferToBinFile(Memory buffer, int bufferUse, String prefix, String suffix) throws IOException {
+        String name = prefix + LocalDateTime.now().format(TEMP_FILENAME_DTM) + "-";
+        Path tempFile = Files.createTempFile(name, suffix == null ? ".bin" : suffix);
+        logger.debug("dumpBuffer: bufferUse={} bytes. tempFile={}", bufferUse, tempFile);
+        byte[] dats = new byte[bufferUse];
+        buffer.read(0, dats, 0, bufferUse);
+        try (FileOutputStream stream = new FileOutputStream(tempFile.toString())) {
+            stream.write(dats);
+        }
+    }
+
 
     String readString(byte[] src, int srcIndex, int len) {
         String str = null;
