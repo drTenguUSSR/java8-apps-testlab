@@ -1,5 +1,6 @@
 package mil.teng251.codesnippets;
 
+import org.apache.commons.cli.CommandLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ public class NowToUTCString implements SnipExec {
     }
 
     @Override
-    public void execute(String[] args) {
+    public void execute(CommandLine commandLine) {
         log.warn("TempNowToUTCStringExample - beg/2");
         String res = nowToUTCString();
         log.warn("expected=!2025-02-14T06:30:09.196!");

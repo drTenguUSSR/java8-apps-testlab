@@ -1,33 +1,120 @@
 package mil.teng251.codesnippets.ntfs;
 
 import com.sun.jna.Memory;
-import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinBase;
-import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sun.jna.ptr.IntByReference;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Slf4j
 public class FileStreamNTFS {
-    private static final Logger logger = LoggerFactory.getLogger(FileStreamNTFS.class);
     private static final boolean useUnicode = true;
     private static final DateTimeFormatter TEMP_FILENAME_DTM = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss.SSS");
 
-    public static void dumpStreams(String path) {
+    private static final Pattern STREAM_NAME_LOOKUP = Pattern.compile("^:(.*?):\\$DATA$");
+    private String basePath;
+
+    public void setBasePath(String basePath) {
+        if (basePath.endsWith("\\") || basePath.endsWith("/")) {
+            this.basePath = basePath.substring(0,basePath.length()-1);
+        } else {
+            this.basePath = basePath;
+        }
+        log.warn("result-base=["+this.basePath+"]");
+    }
+
+    private static void dumpBufferToBinFile(Memory buffer, int bufferUse, String prefix, String suffix) throws IOException {
+        String name = prefix + LocalDateTime.now().format(TEMP_FILENAME_DTM) + "-";
+        Path tempFile = Files.createTempFile(name, suffix == null ? ".bin" : suffix);
+        log.debug("dumpBuffer: bufferUse={} bytes. tempFile={}", bufferUse, tempFile);
+        byte[] dats = new byte[bufferUse];
+        buffer.read(0, dats, 0, bufferUse);
+        try (FileOutputStream stream = new FileOutputStream(tempFile.toString())) {
+            stream.write(dats);
+        }
+    }
+
+    /**
+     * based on com.sun.jna.platform.win32.Kernel32Test
+     * https://github.com/java-native-access/jna/blob/master/contrib/platform/test/com/sun/jna/platform/win32/Kernel32Test.java
+     *
+     * @param filePath
+     * @throws IOException
+     */
+    public static void readFixStream(String filePath) throws IOException {
+
+        log.info("load file {}", filePath);
         WinNT.HANDLE handle = null;
+
         try {
-            String name = "\\\\?\\" + path;
-            //String name = path;
-            handle = Kernel32.INSTANCE.CreateFile(name
+            handle = Kernel32.INSTANCE.CreateFile(filePath
+                    , WinNT.GENERIC_READ
+                    , WinNT.FILE_SHARE_READ,
+                    new WinBase.SECURITY_ATTRIBUTES()
+                    , WinNT.OPEN_EXISTING
+                    , WinNT.FILE_ATTRIBUTE_NORMAL
+                    , null);
+            if (handle == WinBase.INVALID_HANDLE_VALUE) {
+                throw new IOException("CreateFile(" + filePath + "): error 0x" + Integer.toHexString(Kernel32.INSTANCE.GetLastError()));
+            }
+            ByteArrayOutputStream fileData = new ByteArrayOutputStream();
+            byte[] readBuffer = new byte[2500];
+            IntByReference lpNumberOfBytesRead = new IntByReference(0);
+            int callCounter = 0;
+            int readBytes;
+            do {
+                callCounter++;
+                boolean readStatus = Kernel32.INSTANCE.ReadFile(handle, readBuffer, readBuffer.length, lpNumberOfBytesRead, null);
+                if (!readStatus) {
+                    String errCode = Integer.toHexString(Kernel32.INSTANCE.GetLastError());
+                    String msg = "error reading " + " with code=" + errCode;
+                    log.error(msg);
+                    throw new IOException(msg);
+                }
+                readBytes = lpNumberOfBytesRead.getValue();
+                log.debug("readed: callCounter={}. {} bytes", callCounter, readBytes);
+                if (readBytes > 0) {
+                    fileData.write(readBuffer, 0, readBytes);
+                }
+            } while (callCounter < 100 && readBytes != 0);
+
+            if (callCounter == 100) {
+                throw new RuntimeException("too many reads");
+            }
+            byte[] allFileData = fileData.toByteArray();
+            String resultStr = new String(allFileData, 0, allFileData.length);
+            log.debug("resultStr=[\n{}\n]", resultStr);
+        } finally {
+            if (handle != null && handle != WinBase.INVALID_HANDLE_VALUE) {
+                Kernel32.INSTANCE.CloseHandle(handle);
+            }
+        }
+        log.info("!done");
+    }
+
+    public List<StreamInfo> getStreams(String subPath, String fileName) throws IOException {
+        List<StreamInfo> resList = new ArrayList<>();
+        WinNT.HANDLE handle = null;
+        String filePath = "\\\\?\\" + basePath + (subPath == null ? "" : "\\" + subPath)
+                + (fileName == null ? "" : "\\" + fileName);
+
+
+        log.debug("work on [{}]", filePath);
+        try {
+            handle = Kernel32.INSTANCE.CreateFile(filePath
                     , WinNT.GENERIC_READ
                     , NtOsKrnl.FILE_SHARE_ALL
                     , null
@@ -35,9 +122,9 @@ public class FileStreamNTFS {
                     , WinNT.FILE_FLAG_BACKUP_SEMANTICS // or 0?
                     , null);
             if (handle == WinBase.INVALID_HANDLE_VALUE) {
-                throw new RuntimeException("CreateFile(" + path + "): 0x" + Integer.toHexString(Kernel32.INSTANCE.GetLastError()));
+                throw new IOException("CreateFile(" + filePath + "): error 0x" + Integer.toHexString(Kernel32.INSTANCE.GetLastError()));
             }
-            logger.debug("win32-handle={}", handle);
+            log.debug("win32-handle={}", handle);
 
             int bufferSize = 1024;
             Memory buffer = new Memory(bufferSize);
@@ -50,111 +137,71 @@ public class FileStreamNTFS {
                     buffer.size(),
                     NtOsKrnl.NTQUERYINFORMATIONFILE_FILESTREAMINFORMATION);
 
-            logger.debug("resultNtQuery={} ioStatus.status={} ioStatus.Information={} ptr.size={} long.size={}"
-                    , String.format("0x%H", resultNtQuery)
-                    , String.format("0x%H", ioStatus.Status)
-                    , ioStatus.Information.intValue()
-                    , Native.POINTER_SIZE
-                    , WinDef.LONG.SIZE
-            );
+            if (log.isDebugEnabled()) {
+                log.debug("resultNtQuery={} ioStatus.status={} ioStatus.Information={}"
+                        , String.format("0x%H", resultNtQuery)
+                        , String.format("0x%H", ioStatus.Status)
+                        , ioStatus.Information.intValue()
+                );
+            }
 
-            dumpBufferToBinFile(buffer, ioStatus.Information.intValue(), "dump-", ".bin");
-
-
-//            if (resultNtQuery == NtOsKrnl.STATUS_INFO_LENGTH_MISMATCH || resultNtQuery == NtOsKrnl.STATUS_BUFFER_OVERFLOW) {
-//                // Increase the buffer size and try again
-//                bufferSize *= 2;
-//                buffer = new Memory(bufferSize);
-//                continue;
-//            }
+            //dumpBufferToBinFile(buffer, ioStatus.Information.intValue(), "dump-", ".bin");
 
             if (resultNtQuery != 0) {
-                logger.debug("resultNtQuery: NtQueryInformationFile({}): 0x{}", path, Integer.toHexString(resultNtQuery));
-                return;
+                String msg = "Failed to load info about [" + filePath + "]."
+                        + " buffer-size=" + bufferSize
+                        + " resultNtQuery=0x" + Integer.toHexString(resultNtQuery)
+                        + "\nsee detail:"
+                        + "\n\thttps://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/596a1078-e883-4972-9bbc-49e60bebca55"
+                        + "\n\thttps://joyasystems.com/list-of-ntstatus-codes";
+                log.error(msg);
+                throw new IllegalStateException(msg);
+                // resultNtQuery == NtOsKrnl.STATUS_INFO_LENGTH_MISMATCH || resultNtQuery == NtOsKrnl.STATUS_BUFFER_OVERFLOW
+                // Increase the buffer size and try again
+                //bufferSize *= 2;
+                //buffer = new Memory(bufferSize);
+                //continue;
             }
-            long offset = 0;
-            logger.debug("fileInfo.size={}", (new NtOsKrnl.FileStreamFullInfo()).size());
 
+            long offset = 0;
             while (offset < ioStatus.Information.longValue()) {
                 NtOsKrnl.FileStreamFullInfo fileInfo = new NtOsKrnl.FileStreamFullInfo();
                 fileInfo.load(buffer.share(offset));
-                logger.debug("offset={}. streamName.len={} bytes. nextOffset={}", offset, fileInfo.StreamNameLength, fileInfo.NextEntryOffset);
-
-// add read stream flags
-// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_stream_information
-//                int streamNameLength = buffer.getShort(offset + 0) & 0xFFFF; // Length of the stream name
-//                int streamSize = buffer.getInt(offset + 8); // Size of the stream
-//                int streamFlags = buffer.getInt(offset + 12); // Flags
+                log.debug("offset={}. streamName.len={} bytes. nextOffset={}", offset, fileInfo.StreamNameLength, fileInfo.NextEntryOffset);
 
                 if (fileInfo.StreamNameLength > 0) {
                     // Convert char[] to String, considering UTF-16 encoding
-                    String strData = "name:'" + new String(fileInfo.StreamName, 0, fileInfo.StreamNameLength / 2) + "'"
-                            + " , data-length:" + fileInfo.StreamSize;
+                    String streamName = new String(fileInfo.StreamName, 0, fileInfo.StreamNameLength / 2);
                     //stream with name='::$DATA' - main data
-                    logger.debug("stream: {}", strData.trim());
+                    if (streamName.equals("::$DATA")) {
+                        streamName = null;
+                    } else {
+                        //streamName=":one:$DATA"
+                        Matcher matcher = STREAM_NAME_LOOKUP.matcher(streamName);
+                        if (!matcher.find()) {
+                            throw new IllegalStateException("failed decode stream name from [" + streamName + "]");
+                        }
+                        streamName = matcher.group(1);
+                    }
+                    log.debug("stream: name={} length={}", streamName, fileInfo.StreamSize);
+                    StreamInfo streamInfo = new StreamInfo(subPath, fileName, streamName, fileInfo.StreamSize.getValue(), null);
+                    resList.add(streamInfo);
                 }
 
                 if (fileInfo.NextEntryOffset == 0) {
-                    logger.debug("fileInfo.NextEntryOffset is 0. break");
+                    log.debug("fileInfo.NextEntryOffset is 0. break");
                     break;
                 }
 
                 offset += fileInfo.NextEntryOffset;
-                logger.debug("next-offset={}", offset);
+                log.debug("next-offset={}", offset);
             }
-
-        } catch (Throwable t) {
-            logger.warn("path: " + path, t);
         } finally {
-            if (handle != null && !handle.equals(WinBase.INVALID_HANDLE_VALUE)) {
+            if (handle != null && handle != WinBase.INVALID_HANDLE_VALUE) {
                 Kernel32.INSTANCE.CloseHandle(handle);
             }
         }
-
-        return;
-//one,two:fileInfo-1=60129542184,fileInfo-2=43
-//one,two,three:     60129542184,fileInfo-2=58
-
+        log.info("job done! resList.size={}", resList.size());
+        return resList;
     }
-
-    private static void dumpBufferToBinFile(Memory buffer, int bufferUse, String prefix, String suffix) throws IOException {
-        String name = prefix + LocalDateTime.now().format(TEMP_FILENAME_DTM) + "-";
-        Path tempFile = Files.createTempFile(name, suffix == null ? ".bin" : suffix);
-        logger.debug("dumpBuffer: bufferUse={} bytes. tempFile={}", bufferUse, tempFile);
-        byte[] dats = new byte[bufferUse];
-        buffer.read(0, dats, 0, bufferUse);
-        try (FileOutputStream stream = new FileOutputStream(tempFile.toString())) {
-            stream.write(dats);
-        }
-    }
-
-
-    String readString(byte[] src, int srcIndex, int len) {
-        String str = null;
-        if (useUnicode) {
-            // should Unicode alignment be corrected for here?
-            str = new String(src, srcIndex, len, StandardCharsets.UTF_8);
-        } else {
-
-            /* On NT without Unicode the fileNameLength
-             * includes the '\0' whereas on win98 it doesn't. I
-             * guess most clients only support non-unicode so
-             * they don't run into this.
-             */
-
-            /* UPDATE: Maybe not! Could this be a Unicode alignment issue. I hope
-             * so. We cannot just comment out this method and use readString of
-             * ServerMessageBlock.java because the arguments are different, however
-             * one might be able to reduce this.
-             */
-
-            if (len > 0 && src[srcIndex + len - 1] == '\0') {
-                len--;
-            }
-            str = new String(src, srcIndex, len, StandardCharsets.UTF_8);
-        }
-        return str;
-    }
-
-
 }

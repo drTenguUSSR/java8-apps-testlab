@@ -3,6 +3,7 @@ package mil.teng251.codesnippets;
 import com.google.common.base.Strings;
 import lombok.Value;
 import lombok.val;
+import org.apache.commons.cli.CommandLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public class CorrespondentAccountCheckDigit implements SnipExec {
     //https://normativ.kontur.ru/document?moduleId=1&documentId=24444
     //https://uralsib.ru/business/articles/rasshifrovka-raschetnogo-scheta
     @Override
-    public void execute(String[] args) {
+    public void execute(CommandLine commandLine) {
         log.debug("BankAccountNumberValidator - beg/2");
         //БИК 044525491 принадлежит банку КУ ООО ПИР Банк - ГК "АСВ"
 

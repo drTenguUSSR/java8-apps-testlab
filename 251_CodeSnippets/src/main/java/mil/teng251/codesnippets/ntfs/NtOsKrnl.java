@@ -17,7 +17,6 @@ interface NtOsKrnl extends StdCallLibrary, WinNT {
     int FILE_SHARE_ALL = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
     int MAX_PATH = 260;
 
-
     /**
      * return from NtQueryInformationFile
      * https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/596a1078-e883-4972-9bbc-49e60bebca55
@@ -33,8 +32,8 @@ interface NtOsKrnl extends StdCallLibrary, WinNT {
      * </a>
      *
      * @param FileHandle
-     * @param ioStatusBlock - {@link IoStatusBlock}
-     * @param fileInformation - {@link FileStreamFullInfo}
+     * @param ioStatusBlock        - {@link IoStatusBlock}
+     * @param fileInformation      - {@link FileStreamFullInfo}
      * @param length
      * @param fileInformationClass
      * @return
@@ -48,7 +47,7 @@ interface NtOsKrnl extends StdCallLibrary, WinNT {
 
     /**
      * <a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_io_status_block">
-     *     MS doc for IO_STATUS_BLOCK
+     * MS doc for IO_STATUS_BLOCK
      * </a>
      * <pre>
      * typedef struct _IO_STATUS_BLOCK {
@@ -69,7 +68,7 @@ interface NtOsKrnl extends StdCallLibrary, WinNT {
 
     /**
      * <a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_stream_information">
-     *     MS docs for file_stream_information
+     * MS docs for file_stream_information
      * </a>
      * <pre>
      * typedef struct _FILE_STREAM_INFORMATION {
