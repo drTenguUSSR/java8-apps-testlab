@@ -25,15 +25,20 @@ public class FileStreamNTFS {
     private static final DateTimeFormatter TEMP_FILENAME_DTM = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss.SSS");
 
     private static final Pattern STREAM_NAME_LOOKUP = Pattern.compile("^:(.*?):\\$DATA$");
-    private String basePath;
 
-    public void setBasePath(String basePath) {
+    private final String basePath;
+
+    public FileStreamNTFS(String basePath) {
         if (basePath.endsWith("\\") || basePath.endsWith("/")) {
             this.basePath = basePath.substring(0,basePath.length()-1);
         } else {
             this.basePath = basePath;
         }
-        log.warn("result-base=["+this.basePath+"]");
+        log.debug(".ctor: result-base=["+this.basePath+"]");
+    }
+
+    public String getBasePath() {
+        return basePath;
     }
 
     private static void dumpBufferToBinFile(Memory buffer, int bufferUse, String prefix, String suffix) throws IOException {
@@ -55,7 +60,6 @@ public class FileStreamNTFS {
      * @throws IOException
      */
     public static void readFixStream(String filePath) throws IOException {
-
         log.info("load file {}", filePath);
         WinNT.HANDLE handle = null;
 
@@ -126,7 +130,7 @@ public class FileStreamNTFS {
             }
             log.debug("win32-handle={}", handle);
 
-            int bufferSize = 1024;
+            int bufferSize = 256*1024;
             Memory buffer = new Memory(bufferSize);
             NtOsKrnl.IoStatusBlock ioStatus = new NtOsKrnl.IoStatusBlock();
 

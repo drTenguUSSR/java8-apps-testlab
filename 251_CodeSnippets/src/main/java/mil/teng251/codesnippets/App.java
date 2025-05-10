@@ -19,16 +19,33 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class App {
+    public static final String NTFS_VALIDATE_INTERNET_DOWNLOAD = "ntfs-validate-internet-download";
+    public static final String NTFS_LOAD_ADS_LIMIT = "ntfs-load-ads-limit";
     private static final Map<String, SnipExec> SNIPP_MAP = ImmutableMap.of(
             "utc", new NowToUTCString()
             , "account-check", new CorrespondentAccountCheckDigit()
             , "n-streams", new NtfsStreamsInfo()
     );
-    public static final String NTFS_VALIDATE_INTERNET_DOWNLOAD = "ntfs-validate-internet-download";
-    public static final String NTFS_LOAD_ADS_LIMIT = "ntfs-load-ads-limit";
+    private static String HELP_FOOTER_USAGE = ""
+            + "\nshow UTC:"
+            + "\n\tjava -jar client.jar -snippetName=utc"
+            + "\nshow account control digit check:"
+            + "\n\tjava -jar client.jar -snippetName=account-check"
+            + "\nshow NTFS-stream-info:"
+            + "\n\tjava -jar client.jar -snippetName=n-streams -path=D:\\INS\\demo-ntfs-file-streams\\sub1"
+            + "";
 
     public static void main(String[] args) throws IOException {
         log.debug("app-beg");
+        if (args == null) {
+            log.warn("call for help:\n\n\tjava -jar Client.jar ");
+            return;
+        }
+        log.debug("app arg({})=[", args.length);
+        for (int i1 = 0; i1 < args.length; i1++) {
+            log.debug(" - !{}!", args[i1]);
+        }
+        log.debug("]");
 
         Options options = new Options();
         Option config;
@@ -76,7 +93,7 @@ public class App {
                 printHelp(options);
             }
             SnipExec handler = SNIPP_MAP.get(snippetName);
-            if (handler==null) {
+            if (handler == null) {
                 printHelp(options);
                 return;
             }
@@ -91,6 +108,7 @@ public class App {
     public static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("java -jar Client.jar <option> <arguments>", "--- ---", options, "--- ---");
+        log.debug(HELP_FOOTER_USAGE);
     }
 
     private static String getSnips() {

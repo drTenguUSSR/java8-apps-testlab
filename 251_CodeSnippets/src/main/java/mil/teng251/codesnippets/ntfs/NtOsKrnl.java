@@ -15,7 +15,7 @@ interface NtOsKrnl extends StdCallLibrary, WinNT {
     NtOsKrnl INSTANCE = Native.load("NtDll", NtOsKrnl.class, W32APIOptions.UNICODE_OPTIONS);
 
     int FILE_SHARE_ALL = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-    int MAX_PATH = 260;
+    int MAX_PATH = 1024;
 
     /**
      * return from NtQueryInformationFile
