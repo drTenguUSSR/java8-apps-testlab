@@ -4,7 +4,7 @@
 import hashlib
 import os
 
-BASE_FOLDER = "D:\\INS\\251-ntfs-py\\"
+BASE_FOLDER = "D:\\INS\\251-ntfsB-py\\"
 
 
 def gen_sha256(val: int) -> str:

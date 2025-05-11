@@ -32,7 +32,7 @@ public class App {
             + "\nshow account control digit check:"
             + "\n\tjava -jar client.jar -snippetName=account-check"
             + "\nshow NTFS-stream-info:"
-            + "\n\tjava -jar client.jar -snippetName=n-streams -path=D:\\INS\\demo-ntfs-file-streams\\sub1"
+            + "\n\tjava -jar client.jar -snippetName=n-streams -path=D:\\INS\\251-ntfs-multi"
             + "";
 
     public static void main(String[] args) throws IOException {

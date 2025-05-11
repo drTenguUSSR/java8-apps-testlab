@@ -8,6 +8,7 @@ import hashlib
 import os
 from typing import Callable
 
+BASE_FOLDER = "D:\\INS\\251-ntfsA-py\\"
 
 def gen_sha256(val: int) -> str:
     """Generate a hex version of SHA256(str(val)).
@@ -61,7 +62,7 @@ def run_test(path: str, gen_fn: Callable[[int], str]) -> None:
         # Try to create up to 50000 named streams
         for ct in range(50000):
             # The form ends up being [path]:[some hex string]
-            with open(f"{path}:{gen_fn(ct)}", "w") as f:
+            with open(f"{BASE_FOLDER}{path}:{gen_fn(ct)}", "w") as f:
                 f.write("F")
     except OSError:
         # We expect the creation of one of the named streams to fail with

@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  * VM options:
  * -Djava.io.tmpdir=tmpFolder -Dlog4j2.configurationFile=config/log4j2.xml
  * run argument:
- * run --args="-snippetName=ntfs-streams-info 'D:\INS\demo-ntfs-file-streams'"
+ * run --args="-snippetName=n-streams -path=D:\INS\251-ntfs-multi"
  * =========================================================================
  * practical limit for streamName=255 chars
  * <p>
