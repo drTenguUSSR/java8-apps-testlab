@@ -78,7 +78,7 @@ public class NtfsStreamsInfo implements SnipExec {
 
         log.debug("result info for path={} size={}: [", cmdPath, streamsList.size());
         for (StreamInfo dat : streamsList) {
-            log.debug("- {},{}:{} len={}", dat.getFolderName(), dat.getFileName(), dat.getStreamName(), dat.getStreamLength());
+            log.debug("- {},\"{}:{}\" len={}", dat.getFolderName(), dat.getFileName(), dat.getStreamName(), dat.getStreamLength());
         }
         log.debug("]");
 
