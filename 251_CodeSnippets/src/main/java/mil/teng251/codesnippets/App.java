@@ -23,6 +23,7 @@ public class App {
     public static final String NTFS_LOAD_ADS_LIMIT = "ntfs-load-ads-limit";
     private static final Map<String, SnipExec> SNIPP_MAP = ImmutableMap.of(
             "utc", new NowToUTCString()
+            , "rus", new RusCheck()
             , "account-check", new CorrespondentAccountCheckDigit()
             , "n-streams", new NtfsStreamsInfo()
     );
@@ -31,6 +32,8 @@ public class App {
             + "\n\tjava -jar client.jar -snippetName=utc"
             + "\nshow account control digit check:"
             + "\n\tjava -jar client.jar -snippetName=account-check"
+            + "\nshow Cyrillic chars:"
+            + "\n\tjava -jar client.jar -snippetName=rus"
             + "\nshow NTFS-stream-info:"
             + "\n\tjava -jar client.jar -snippetName=n-streams -path=D:\\INS\\251-ntfs-multi"
             + "";

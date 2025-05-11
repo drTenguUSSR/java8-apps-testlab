@@ -17,7 +17,11 @@
         <RollingFile name="FileAppender" fileName="${LOG_PATH}/main.log"
                      filePattern="${LOG_PATH}/archive/main.%d{yyyyMMdd-HH}-%i.log.zip">
             <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
-            <SizeBasedTriggeringPolicy size="10 Mb" />
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 Mb" />
+            </Policies>
             <DefaultRolloverStrategy>
                 <Delete basePath="${LOG_PATH}/archive/" maxDepth="1">
                     <IfFileName glob="main.*.log.zip"/>

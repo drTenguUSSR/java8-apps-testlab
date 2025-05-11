@@ -1,5 +1,6 @@
 package mil.teng251.codesnippets;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,9 @@ import java.time.format.DateTimeFormatter;
  * run argument:
  *  run --args="-snippetName=utc"
  */
-public class NowToUTCString implements SnipExec {
-    private static final Logger log = LoggerFactory.getLogger(NowToUTCString.class);
 
+@Slf4j
+public class NowToUTCString implements SnipExec {
     private static String nowToUTCString() {
         OffsetDateTime dtm = OffsetDateTime.now(ZoneOffset.UTC);
         return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dtm);
