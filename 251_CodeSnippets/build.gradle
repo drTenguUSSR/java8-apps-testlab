@@ -52,6 +52,15 @@ dependencies {
 
     // https://mvnrepository.com/artifact/commons-cli/commons-cli
     implementation 'commons-cli:commons-cli:1.9.0'
+
+    // https://mvnrepository.com/artifact/org.apache.tika/tika-core
+    implementation("org.apache.tika:tika-core:2.9.4")
+
+    // https://mvnrepository.com/artifact/org.apache.tika/tika-parsers
+    implementation("org.apache.tika:tika-parsers:2.9.4")
+
+    // https://mvnrepository.com/artifact/de.vandermeer/asciitable
+    implementation("de.vandermeer:asciitable:0.3.2")
 }
 
 application {

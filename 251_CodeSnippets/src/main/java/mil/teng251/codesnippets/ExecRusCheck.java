@@ -34,7 +34,7 @@ import java.time.format.DateTimeFormatter;
  * - log.debug в файле - корректно
  */
 @Slf4j
-public class RusCheck implements SnipExec {
+public class ExecRusCheck implements SnipExec {
     private static String nowToUTCString() {
         OffsetDateTime dtm = OffsetDateTime.now(ZoneOffset.UTC);
         return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dtm);

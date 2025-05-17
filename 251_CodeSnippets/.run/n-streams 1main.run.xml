@@ -11,7 +11,7 @@
       <option name="taskNames">
         <list>
           <option value="run" />
-          <option value="--args=&quot;-snippetName=n-streams -path=D:\INS\251-ntfs-multi&quot;" />
+          <option value="--args=&quot;-snippetName=n-streams -ntfs-validate-internet-download -path=D:\INS\251-ntfs-multi&quot;" />
         </list>
       </option>
       <option name="vmOptions" value="-Djava.io.tmpdir=tmpFolder -Dlog4j2.configurationFile=config/log4j2.xml" />

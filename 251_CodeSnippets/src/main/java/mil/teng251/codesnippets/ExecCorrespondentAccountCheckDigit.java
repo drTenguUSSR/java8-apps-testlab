@@ -17,8 +17,8 @@ import java.util.List;
  * run argument:
  *  run --args="-snippetName=account-check"
  */
-public class CorrespondentAccountCheckDigit implements SnipExec {
-    private static final Logger log = LoggerFactory.getLogger(CorrespondentAccountCheckDigit.class);
+public class ExecCorrespondentAccountCheckDigit implements SnipExec {
+    private static final Logger log = LoggerFactory.getLogger(ExecCorrespondentAccountCheckDigit.class);
     private static final int[] BASE_713 = {7, 1, 3};
 
     private static String doKeyCalc(String bik, String account) {

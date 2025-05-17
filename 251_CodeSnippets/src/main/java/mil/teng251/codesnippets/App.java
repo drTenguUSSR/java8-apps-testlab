@@ -2,7 +2,7 @@ package mil.teng251.codesnippets;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import mil.teng251.codesnippets.ntfs.NtfsStreamsInfo;
+import mil.teng251.codesnippets.ntfs.ExecNtfsStreamsInfo;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
@@ -19,13 +19,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class App {
-    public static final String NTFS_VALIDATE_INTERNET_DOWNLOAD = "ntfs-validate-internet-download";
-    public static final String NTFS_LOAD_ADS_LIMIT = "ntfs-load-ads-limit";
     private static final Map<String, SnipExec> SNIPP_MAP = ImmutableMap.of(
-            "utc", new NowToUTCString()
-            , "rus", new RusCheck()
-            , "account-check", new CorrespondentAccountCheckDigit()
-            , "n-streams", new NtfsStreamsInfo()
+            "utc", new ExecNowToUTCString()
+            , "rus", new ExecRusCheck()
+            , "account-check", new ExecCorrespondentAccountCheckDigit()
+            , "n-streams", new ExecNtfsStreamsInfo()
     );
     private static String HELP_FOOTER_USAGE = ""
             + "\nshow UTC:"
@@ -61,8 +59,8 @@ public class App {
                 .build();
         options.addOption(config);
 
-        config = Option.builder("p")
-                .longOpt("path")
+        config = Option.builder()
+                .longOpt(ExecNtfsStreamsInfo.CMD_PATH)
                 .numberOfArgs(1)
                 .hasArg()
                 .required(false)
@@ -71,7 +69,7 @@ public class App {
         options.addOption(config);
 
         config = Option.builder()
-                .longOpt(NTFS_LOAD_ADS_LIMIT)
+                .longOpt(ExecNtfsStreamsInfo.LOAD_ADS_LIMIT)
                 .numberOfArgs(1)
                 .hasArg()
                 .required(false)
@@ -80,7 +78,7 @@ public class App {
         options.addOption(config);
 
         config = Option.builder()
-                .longOpt(NTFS_VALIDATE_INTERNET_DOWNLOAD)
+                .longOpt(ExecNtfsStreamsInfo.VALIDATE_INTERNET_DOWNLOAD)
                 .numberOfArgs(0)
                 .required(false)
                 .desc("(opt: n-streams) if present - validate 'Zone.Identifier' stream")
