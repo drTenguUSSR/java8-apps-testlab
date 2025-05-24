@@ -1,12 +1,8 @@
 package mil.teng251.codesnippets.ntfs;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 
 class ExecNtfsStreamsInfoTest {
     @ParameterizedTest

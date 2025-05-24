@@ -1,6 +1,7 @@
-package mil.teng251.codesnippets;
+package mil.teng251.codesnippets.simple;
 
 import lombok.extern.slf4j.Slf4j;
+import mil.teng251.codesnippets.SnipExec;
 import org.apache.commons.cli.CommandLine;
 
 import java.io.IOException;

@@ -1,8 +1,9 @@
-package mil.teng251.codesnippets;
+package mil.teng251.codesnippets.simple;
 
 import com.google.common.base.Strings;
 import lombok.Value;
 import lombok.val;
+import mil.teng251.codesnippets.SnipExec;
 import org.apache.commons.cli.CommandLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -3,6 +3,9 @@ package mil.teng251.codesnippets;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import mil.teng251.codesnippets.ntfs.ExecNtfsStreamsInfo;
+import mil.teng251.codesnippets.simple.ExecCorrespondentAccountCheckDigit;
+import mil.teng251.codesnippets.simple.ExecNowToUTCString;
+import mil.teng251.codesnippets.simple.ExecRusCheck;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;

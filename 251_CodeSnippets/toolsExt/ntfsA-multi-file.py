@@ -50,11 +50,12 @@ def gen_sha24(val: int) -> str:
 
 
 def run_test(path: str, gen_fn: Callable[[int], str]) -> None:
+    path2=f"{BASE_FOLDER}{path}"
     # Remove anything leftover from a previous run
-    if os.path.exists(path):
-        os.unlink(path)
+    if os.path.exists(path2):
+        os.unlink(path2)
 
-    with open(path, "w") as f:
+    with open(path2, "w") as f:
         f.write("F")
 
     ct = 0
@@ -72,8 +73,17 @@ def run_test(path: str, gen_fn: Callable[[int], str]) -> None:
 
 
 if __name__ == "__main__":
-    run_test("a.txt", gen_sha256)  # 64 characters
-    run_test("b.txt", gen_sha128)  # 32 characters
-    run_test("c.txt", gen_sha64)   # 16 characters
+    print(f"checking exist {BASE_FOLDER}")
+    if not os.path.exists(BASE_FOLDER):
+        print(f"folder {BASE_FOLDER} not exist. exit")
+        exit(1)
+    if not os.path.isdir(BASE_FOLDER):
+        print(f"folder {BASE_FOLDER} not a folder. exit")
+        exit(1)
+    print("continue")
+
+#    run_test("a.txt", gen_sha256)  # 64 characters
+#    run_test("b.txt", gen_sha128)  # 32 characters
+#    run_test("c.txt", gen_sha64)   # 16 characters
     run_test("d.txt", gen_sha32)   #  8 characters
-    run_test("e.txt", gen_sha24)   #  6 characters
+#    run_test("e.txt", gen_sha24)   #  6 characters

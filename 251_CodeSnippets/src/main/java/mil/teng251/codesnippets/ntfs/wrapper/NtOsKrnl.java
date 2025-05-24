@@ -1,4 +1,4 @@
-package mil.teng251.codesnippets.ntfs;
+package mil.teng251.codesnippets.ntfs.wrapper;
 
 
 import com.sun.jna.Native;

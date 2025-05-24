@@ -1,10 +1,14 @@
 package mil.teng251.codesnippets.ntfs;
 
 import com.google.common.base.Strings;
-import de.vandermeer.asciitable.*;
+import de.vandermeer.asciitable.AT_Renderer;
+import de.vandermeer.asciitable.AT_Row;
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_FixedWidth;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
 import mil.teng251.codesnippets.SnipExec;
+import mil.teng251.codesnippets.ntfs.wrapper.NtfsWrapper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.tika.Tika;
 
@@ -48,6 +52,27 @@ public class ExecNtfsStreamsInfo implements SnipExec {
     public static final String VALIDATE_INTERNET_DOWNLOAD = "ntfs-validate-internet-download";
     public static final String LOAD_ADS_LIMIT = "ntfs-load-ads-limit";
 
+    /**
+     * https://stackoverflow.com/questions/3758606/how-can-i-convert-byte-size-into-a-human-readable-format-in-java
+     *
+     * @param bytes
+     * @return
+     */
+    public static String humanReadableByteCountBin(long bytes) {
+        long absB = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
+        if (absB < 1024) {
+            return bytes + " B";
+        }
+        long value = absB;
+        CharacterIterator ci = new StringCharacterIterator("KMGTPE");
+        for (int i = 40; i >= 0 && absB > 0xfffccccccccccccL >> i; i -= 10) {
+            value >>= 10;
+            ci.next();
+        }
+        value *= Long.signum(bytes);
+        return String.format("%.1f %cB", value / 1024.0, ci.current());
+    }
+
     @Override
     public void execute(CommandLine commandLine) throws IOException {
         String cmdPath = commandLine.getOptionValue(CMD_PATH);
@@ -64,8 +89,7 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         }
         boolean isDirectory = Files.isDirectory(paramPath);
         log.debug("isDirectory={}", isDirectory);
-
-        FileStreamNTFS fileStreamNTFS = new FileStreamNTFS(cmdPath);
+        
         List<StreamInfo> streamsList = new ArrayList<>();
         if (isDirectory) {
             //test-fix-work-beg
@@ -80,10 +104,11 @@ public class ExecNtfsStreamsInfo implements SnipExec {
                         .collect(Collectors.toSet());
             }
             for (String xfile : allFiles) {
-                processFile(fileStreamNTFS, streamsList, xfile);
+                processFile(cmdPath, streamsList, xfile);
             }
         } else {
-            streamsList.addAll(fileStreamNTFS.getStreams(null, null));
+            NtfsWrapper ntfsWrapper = new NtfsWrapper();
+            streamsList.addAll(ntfsWrapper.getStreams(cmdPath, null, null));
         }
 
         StringBuilder resultReport = new StringBuilder();
@@ -106,7 +131,7 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         row.getCells().get(3).getContext().setTextAlignment(TextAlignment.CENTER);
         table.addRule();
         for (StreamInfo dat : streamsList) {
-            row=table.addRow(
+            row = table.addRow(
                     dat.getFolderName() == null ? "" : dat.getFolderName(),
                     dat.getFileName(),
                     dat.getStreamName() == null ? "" : dat.getStreamName(),
@@ -151,30 +176,10 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         log.warn("processTestFixWork end");
     }
 
-    private void processFile(FileStreamNTFS fileStreamNTFS, List<StreamInfo> streamsList, String xfile) throws IOException {
-        log.debug("iteration. base={}. file={}", fileStreamNTFS.getBasePath(), xfile);
-        List<StreamInfo> stm = fileStreamNTFS.getStreams(null, xfile);
+    private void processFile(String basePath, List<StreamInfo> streamsList, String xfile) throws IOException {
+        log.debug("iteration. base={}. file={}", basePath, xfile);
+        NtfsWrapper ntfsWrapper = new NtfsWrapper();
+        List<StreamInfo> stm = ntfsWrapper.getStreams(basePath, null, xfile);
         streamsList.addAll(stm);
     }
-
-    /**
-     * https://stackoverflow.com/questions/3758606/how-can-i-convert-byte-size-into-a-human-readable-format-in-java
-     * @param bytes
-     * @return
-     */
-    public static String humanReadableByteCountBin(long bytes) {
-        long absB = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
-        if (absB < 1024) {
-            return bytes + " B";
-        }
-        long value = absB;
-        CharacterIterator ci = new StringCharacterIterator("KMGTPE");
-        for (int i = 40; i >= 0 && absB > 0xfffccccccccccccL >> i; i -= 10) {
-            value >>= 10;
-            ci.next();
-        }
-        value *= Long.signum(bytes);
-        return String.format("%.1f %cB", value / 1024.0, ci.current());
-    }
-
 }

@@ -1,4 +1,4 @@
-package mil.teng251.codesnippets.ntfs;
+package mil.teng251.codesnippets.ntfs.wrapper;
 
 import com.sun.jna.Memory;
 import com.sun.jna.platform.win32.Kernel32;
@@ -6,6 +6,7 @@ import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
 import lombok.extern.slf4j.Slf4j;
+import mil.teng251.codesnippets.ntfs.StreamInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -20,26 +21,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class FileStreamNTFS {
+public class NtfsWrapper {
     private static final boolean useUnicode = true;
     private static final DateTimeFormatter TEMP_FILENAME_DTM = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss.SSS");
 
     private static final Pattern STREAM_NAME_LOOKUP = Pattern.compile("^:(.*?):\\$DATA$");
-
-    private final String basePath;
-
-    public FileStreamNTFS(String basePath) {
-        if (basePath.endsWith("\\") || basePath.endsWith("/")) {
-            this.basePath = basePath.substring(0,basePath.length()-1);
-        } else {
-            this.basePath = basePath;
-        }
-        log.debug(".ctor: result-base=["+this.basePath+"]");
-    }
-
-    public String getBasePath() {
-        return basePath;
-    }
 
     private static void dumpBufferToBinFile(Memory buffer, int bufferUse, String prefix, String suffix) throws IOException {
         String name = prefix + LocalDateTime.now().format(TEMP_FILENAME_DTM) + "-";
@@ -109,12 +95,18 @@ public class FileStreamNTFS {
         log.info("!done");
     }
 
-    public List<StreamInfo> getStreams(String subPath, String fileName) throws IOException {
+    public String dropPathSeparator(String basePath) {
+        if (basePath.endsWith("\\") || basePath.endsWith("/")) {
+            return basePath.substring(0, basePath.length() - 1);
+        }
+        return basePath;
+    }
+
+    public List<StreamInfo> getStreams(String basePath, String subPath, String fileName) throws IOException {
         List<StreamInfo> resList = new ArrayList<>();
         WinNT.HANDLE handle = null;
-        String filePath = "\\\\?\\" + basePath + (subPath == null ? "" : "\\" + subPath)
+        String filePath = "\\\\?\\" + dropPathSeparator(basePath) + (subPath == null ? "" : "\\" + subPath)
                 + (fileName == null ? "" : "\\" + fileName);
-
 
         log.debug("work on [{}]", filePath);
         try {
@@ -130,7 +122,7 @@ public class FileStreamNTFS {
             }
             log.debug("win32-handle={}", handle);
 
-            int bufferSize = 256*1024;
+            int bufferSize = 256 * 1024;
             Memory buffer = new Memory(bufferSize);
             NtOsKrnl.IoStatusBlock ioStatus = new NtOsKrnl.IoStatusBlock();
 
