@@ -5,6 +5,7 @@ import de.vandermeer.asciitable.AT_Renderer;
 import de.vandermeer.asciitable.AT_Row;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_FixedWidth;
+import de.vandermeer.asciithemes.u8.U8_Grids;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
 import mil.teng251.codesnippets.SnipExec;
@@ -16,8 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -52,27 +51,6 @@ public class ExecNtfsStreamsInfo implements SnipExec {
     public static final String VALIDATE_INTERNET_DOWNLOAD = "ntfs-validate-internet-download";
     public static final String LOAD_ADS_LIMIT = "ntfs-load-ads-limit";
 
-    /**
-     * https://stackoverflow.com/questions/3758606/how-can-i-convert-byte-size-into-a-human-readable-format-in-java
-     *
-     * @param bytes
-     * @return
-     */
-    public static String humanReadableByteCountBin(long bytes) {
-        long absB = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
-        if (absB < 1024) {
-            return bytes + " B";
-        }
-        long value = absB;
-        CharacterIterator ci = new StringCharacterIterator("KMGTPE");
-        for (int i = 40; i >= 0 && absB > 0xfffccccccccccccL >> i; i -= 10) {
-            value >>= 10;
-            ci.next();
-        }
-        value *= Long.signum(bytes);
-        return String.format("%.1f %cB", value / 1024.0, ci.current());
-    }
-
     @Override
     public void execute(CommandLine commandLine) throws IOException {
         String cmdPath = commandLine.getOptionValue(CMD_PATH);
@@ -89,7 +67,7 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         }
         boolean isDirectory = Files.isDirectory(paramPath);
         log.debug("isDirectory={}", isDirectory);
-        
+
         List<StreamInfo> streamsList = new ArrayList<>();
         if (isDirectory) {
             //test-fix-work-beg
@@ -121,6 +99,8 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         cwcFixed.add(30).add(30).add(30).add(15);
         AT_Renderer tableRender = AT_Renderer.create().setCWC(cwcFixed);
         table.setRenderer(tableRender);
+        table.getContext().setGrid(U8_Grids.borderStrongDoubleLight());
+
         AT_Row row;
 
         table.addRule();
@@ -129,20 +109,22 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         row.getCells().get(1).getContext().setTextAlignment(TextAlignment.CENTER);
         row.getCells().get(2).getContext().setTextAlignment(TextAlignment.CENTER);
         row.getCells().get(3).getContext().setTextAlignment(TextAlignment.CENTER);
-        table.addRule();
+        table.addStrongRule();
+
         for (StreamInfo dat : streamsList) {
             row = table.addRow(
                     dat.getFolderName() == null ? "" : dat.getFolderName(),
                     dat.getFileName(),
                     dat.getStreamName() == null ? "" : dat.getStreamName(),
-                    humanReadableByteCountBin(dat.getStreamLength()));
+                    CommonHelper.humanReadableByteCountBin(dat.getStreamLength()));
             row.getCells().get(0).getContext().setTextAlignment(TextAlignment.RIGHT);
             row.getCells().get(1).getContext().setTextAlignment(TextAlignment.RIGHT);
             row.getCells().get(2).getContext().setTextAlignment(TextAlignment.RIGHT);
             row.getCells().get(3).getContext().setTextAlignment(TextAlignment.RIGHT);
             table.addRule();
+            table.addRow(null, null, null, dat.getReport() == null ? "" : dat.getReport());
+            table.addStrongRule();
         }
-
 
         resultReport.append("\n").append(table.render());
 

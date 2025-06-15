@@ -11,4 +11,5 @@ public class StreamInfo {
     private String streamName;
     private long streamLength;
     private String streamData;
+    private String report;
 }

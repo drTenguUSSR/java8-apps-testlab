@@ -180,7 +180,8 @@ public class NtfsWrapper {
                         streamName = matcher.group(1);
                     }
                     log.debug("stream: name={} length={}", streamName, fileInfo.StreamSize);
-                    StreamInfo streamInfo = new StreamInfo(subPath, fileName, streamName, fileInfo.StreamSize.getValue(), null);
+                    StreamInfo streamInfo = new StreamInfo(subPath, fileName, streamName, fileInfo.StreamSize.getValue()
+                            , null, null);
                     resList.add(streamInfo);
                 }
 

@@ -1,10 +1,13 @@
 package mil.teng251.codesnippets.ntfs;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class ExecNtfsStreamsInfoTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+class CommonHelperTest {
     @ParameterizedTest
     @CsvSource({
             "0, 0 B"
@@ -26,10 +29,10 @@ class ExecNtfsStreamsInfoTest {
             , "1_777_777_777_777_777_777L, 1.5 EB"
 
     })
-    void calc(String pCount, String pResult) {
+    void humanReadableByteCountBin(String pCount, String pResult) {
         String pCount2S = pCount.replaceAll("[_L]", "");
         long pCount2L = Long.parseLong(pCount2S);
-        String res = ExecNtfsStreamsInfo.humanReadableByteCountBin(pCount2L);
+        String res = CommonHelper.humanReadableByteCountBin(pCount2L);
         Assertions.assertEquals(pResult, res);
     }
 }
