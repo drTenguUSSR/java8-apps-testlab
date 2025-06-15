@@ -5,8 +5,10 @@ import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import mil.teng251.codesnippets.ntfs.StreamInfo;
+import mil.teng251.codesnippets.ntfs.CommonHelper;
+import mil.teng251.codesnippets.ntfs.NtfsStreamInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -39,13 +41,15 @@ public class NtfsWrapper {
     }
 
     /**
+     * ограниченое чтение данных потока
      * based on com.sun.jna.platform.win32.Kernel32Test
      * https://github.com/java-native-access/jna/blob/master/contrib/platform/test/com/sun/jna/platform/win32/Kernel32Test.java
      *
-     * @param filePath
+     * @param filePath  полный путь к потоку файла
+     * @param byteLimit лимит чтения. если длина потока больше лимита - вернется (true, null).
      * @throws IOException
      */
-    public static void readFixStream(String filePath) throws IOException {
+    public static ReadStreamLimitedResult readStreamLimited(String filePath, long byteLimit) throws IOException {
         log.info("load file {}", filePath);
         WinNT.HANDLE handle = null;
 
@@ -63,10 +67,9 @@ public class NtfsWrapper {
             ByteArrayOutputStream fileData = new ByteArrayOutputStream();
             byte[] readBuffer = new byte[2500];
             IntByReference lpNumberOfBytesRead = new IntByReference(0);
-            int callCounter = 0;
             int readBytes;
+            long totalReadBytes = 0;
             do {
-                callCounter++;
                 boolean readStatus = Kernel32.INSTANCE.ReadFile(handle, readBuffer, readBuffer.length, lpNumberOfBytesRead, null);
                 if (!readStatus) {
                     String errCode = Integer.toHexString(Kernel32.INSTANCE.GetLastError());
@@ -75,40 +78,43 @@ public class NtfsWrapper {
                     throw new IOException(msg);
                 }
                 readBytes = lpNumberOfBytesRead.getValue();
-                log.debug("readed: callCounter={}. {} bytes", callCounter, readBytes);
+                totalReadBytes += readBytes;
+                //log.debug("readed: now-read={} bytes. total-read={} bytes", readBytes, totalReadBytes);
                 if (readBytes > 0) {
                     fileData.write(readBuffer, 0, readBytes);
                 }
-            } while (callCounter < 100 && readBytes != 0);
+            } while (readBytes != 0 && totalReadBytes <= byteLimit);
 
-            if (callCounter == 100) {
-                throw new RuntimeException("too many reads");
+            if (readBytes != 0) {
+                return new ReadStreamLimitedResult(true, null);
             }
+
             byte[] allFileData = fileData.toByteArray();
-            String resultStr = new String(allFileData, 0, allFileData.length);
-            log.debug("resultStr=[\n{}\n]", resultStr);
+            return new ReadStreamLimitedResult(false, allFileData);
         } finally {
             if (handle != null && handle != WinBase.INVALID_HANDLE_VALUE) {
                 Kernel32.INSTANCE.CloseHandle(handle);
             }
         }
-        log.info("!done");
     }
 
-    public String dropPathSeparator(String basePath) {
-        if (basePath.endsWith("\\") || basePath.endsWith("/")) {
-            return basePath.substring(0, basePath.length() - 1);
-        }
-        return basePath;
-    }
 
-    public List<StreamInfo> getStreams(String basePath, String subPath, String fileName) throws IOException {
-        List<StreamInfo> resList = new ArrayList<>();
+    /**
+     * информация о всех NTFSпотоках указанного файла - $basePath\$subPath\$fileName
+     *
+     * @param basePath папка (без pathSeparator в конце имени)
+     * @param subPath  подпапка
+     * @param fileName файл в подпапке
+     * @return полный перечень потоков. Прим.: для главного потока в {@link NtfsStreamInfo#getStreamName()}
+     * возвращается null
+     * @throws IOException
+     */
+    public List<NtfsStreamInfo> getStreams(String basePath, String subPath, String fileName) throws IOException {
+        List<NtfsStreamInfo> resList = new ArrayList<>();
         WinNT.HANDLE handle = null;
-        String filePath = "\\\\?\\" + dropPathSeparator(basePath) + (subPath == null ? "" : "\\" + subPath)
-                + (fileName == null ? "" : "\\" + fileName);
+        String filePath = "\\\\?\\" + CommonHelper.makeFullPath(basePath, subPath, fileName);
 
-        log.debug("work on [{}]", filePath);
+        log.debug("getStreams path=[{}]", filePath);
         try {
             handle = Kernel32.INSTANCE.CreateFile(filePath
                     , WinNT.GENERIC_READ
@@ -140,9 +146,7 @@ public class NtfsWrapper {
                         , ioStatus.Information.intValue()
                 );
             }
-
             //dumpBufferToBinFile(buffer, ioStatus.Information.intValue(), "dump-", ".bin");
-
             if (resultNtQuery != 0) {
                 String msg = "Failed to load info about [" + filePath + "]."
                         + " buffer-size=" + bufferSize
@@ -180,7 +184,7 @@ public class NtfsWrapper {
                         streamName = matcher.group(1);
                     }
                     log.debug("stream: name={} length={}", streamName, fileInfo.StreamSize);
-                    StreamInfo streamInfo = new StreamInfo(subPath, fileName, streamName, fileInfo.StreamSize.getValue()
+                    NtfsStreamInfo streamInfo = new NtfsStreamInfo(subPath, fileName, streamName, fileInfo.StreamSize.getValue()
                             , null, null);
                     resList.add(streamInfo);
                 }
@@ -200,5 +204,11 @@ public class NtfsWrapper {
         }
         log.info("job done! resList.size={}", resList.size());
         return resList;
+    }
+
+    @Value
+    public static class ReadStreamLimitedResult {
+        boolean overflow;
+        byte[] data;
     }
 }

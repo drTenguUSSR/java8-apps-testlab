@@ -5,7 +5,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class StreamInfo {
+public class NtfsStreamInfo {
     private String folderName;
     private String fileName;
     private String streamName;

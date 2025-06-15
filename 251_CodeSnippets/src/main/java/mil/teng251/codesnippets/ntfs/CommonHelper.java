@@ -1,5 +1,7 @@
 package mil.teng251.codesnippets.ntfs;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
@@ -23,5 +25,45 @@ public class CommonHelper {
         }
         value *= Long.signum(bytes);
         return String.format("%.1f %cB", value / 1024.0, ci.current());
+    }
+
+    public static String dropPathSeparator(String basePath) {
+        if (basePath.endsWith("\\") || basePath.endsWith("/")) {
+            return basePath.substring(0, basePath.length() - 1);
+        }
+        return basePath;
+    }
+
+    public static String makeFullPath(String basePath, String subPath, String fileName) {
+        return basePath
+                + (subPath == null ? "" : "\\" + subPath)
+                + (fileName == null ? "" : "\\" + fileName);
+    }
+
+    public static boolean isValidUtf8(byte[] data) {
+        try {
+            String test = new String(data, StandardCharsets.UTF_8);
+            return test.equals(new String(test.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isTextData(byte[] byteArray) {
+        if (isTextInEncoding(byteArray, Charset.forName("CP866"))) {
+            return true;
+        }
+        if (isTextInEncoding(byteArray, Charset.forName("windows-1251"))) {
+            return true;
+        }
+        if (isTextInEncoding(byteArray, Charset.forName("utf-8"))) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean isTextInEncoding(byte[] byteArray, Charset charset) {
+        String decodedString = new String(byteArray, charset);
+        return decodedString.chars().allMatch(c -> c >= 32 || c == 9 || c == 10 || c == 13);
     }
 }

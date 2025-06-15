@@ -9,7 +9,6 @@ import de.vandermeer.asciithemes.u8.U8_Grids;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
 import mil.teng251.codesnippets.SnipExec;
-import mil.teng251.codesnippets.ntfs.wrapper.NtfsWrapper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.tika.Tika;
 
@@ -17,11 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * for IDE run:
@@ -43,6 +38,10 @@ import java.util.stream.Stream;
  * (sum for all steam name length)
  * <p>
  * find stream 2 - https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirststreamw
+ * ==========================================================================
+ * add binary stream to existing file via powershell
+ * $data = [System.IO.File]::ReadAllBytes('D:\ins\251-ntfs-multi\simple-bin.7z')
+ * $data | Set-Content -Encoding Byte -Stream mm1 .\file-with-bin.txt
  */
 @Slf4j
 public class ExecNtfsStreamsInfo implements SnipExec {
@@ -57,37 +56,13 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         if (Strings.isNullOrEmpty(cmdPath)) {
             throw new IllegalArgumentException("param '-path' is null or empty!");
         }
+        cmdPath=CommonHelper.dropPathSeparator(cmdPath);
         boolean cmdValidateInternet = commandLine.hasOption(VALIDATE_INTERNET_DOWNLOAD);
         int cmdAdsLimit = Integer.parseInt(commandLine.getOptionValue(LOAD_ADS_LIMIT, "0"));
         log.debug("cmdPath={} validateInternet={} cmdAdsLimit={}", cmdPath, cmdValidateInternet, cmdAdsLimit);
 
-        Path paramPath = Paths.get(cmdPath);
-        if (!Files.exists(paramPath)) {
-            throw new IllegalArgumentException("path [" + cmdPath + "] not exist");
-        }
-        boolean isDirectory = Files.isDirectory(paramPath);
-        log.debug("isDirectory={}", isDirectory);
-
-        List<StreamInfo> streamsList = new ArrayList<>();
-        if (isDirectory) {
-            //test-fix-work-beg
-            //processTestFixWork(cmdPath);
-            //test-fix-work-end
-            Set<String> allFiles;
-            try (Stream<Path> streamItem = Files.list(paramPath)) {
-                allFiles = streamItem
-                        .filter(Files::isRegularFile)
-                        .map(Path::getFileName)
-                        .map(Path::toString)
-                        .collect(Collectors.toSet());
-            }
-            for (String xfile : allFiles) {
-                processFile(cmdPath, streamsList, xfile);
-            }
-        } else {
-            NtfsWrapper ntfsWrapper = new NtfsWrapper();
-            streamsList.addAll(ntfsWrapper.getStreams(cmdPath, null, null));
-        }
+        FileItemProcessor proc = new FileItemProcessor();
+        List<NtfsStreamInfo> streamsList =proc.fileItemProcessor(cmdPath);
 
         StringBuilder resultReport = new StringBuilder();
         resultReport.append(String.format("%nresult info for path=%s size=%d:", cmdPath, streamsList.size()));
@@ -111,7 +86,7 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         row.getCells().get(3).getContext().setTextAlignment(TextAlignment.CENTER);
         table.addStrongRule();
 
-        for (StreamInfo dat : streamsList) {
+        for (NtfsStreamInfo dat : streamsList) {
             row = table.addRow(
                     dat.getFolderName() == null ? "" : dat.getFolderName(),
                     dat.getFileName(),
@@ -158,10 +133,4 @@ public class ExecNtfsStreamsInfo implements SnipExec {
         log.warn("processTestFixWork end");
     }
 
-    private void processFile(String basePath, List<StreamInfo> streamsList, String xfile) throws IOException {
-        log.debug("iteration. base={}. file={}", basePath, xfile);
-        NtfsWrapper ntfsWrapper = new NtfsWrapper();
-        List<StreamInfo> stm = ntfsWrapper.getStreams(basePath, null, xfile);
-        streamsList.addAll(stm);
-    }
 }
