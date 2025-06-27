@@ -9,6 +9,8 @@ import de.vandermeer.asciithemes.u8.U8_Grids;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
 import mil.teng251.codesnippets.SnipExec;
+import mil.teng251.codesnippets.ntfs.dto.FsFolderInfo;
+import mil.teng251.codesnippets.ntfs.dto.FsItemStream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.tika.Tika;
 
@@ -52,17 +54,48 @@ public class ExecNtfsStreamsInfo implements SnipExec {
 
     @Override
     public void execute(CommandLine commandLine) throws IOException {
+        log.error("execute-beg");
         String cmdPath = commandLine.getOptionValue(CMD_PATH);
         if (Strings.isNullOrEmpty(cmdPath)) {
             throw new IllegalArgumentException("param '-path' is null or empty!");
         }
-        cmdPath=CommonHelper.dropPathSeparator(cmdPath);
+        cmdPath = CommonHelper.dropPathSeparator(cmdPath);
+        boolean cmdValidateInternet = commandLine.hasOption(VALIDATE_INTERNET_DOWNLOAD);
+        int cmdAdsLimit = Integer.parseInt(commandLine.getOptionValue(LOAD_ADS_LIMIT, "0"));
+        log.debug("cmdPath={} validateInternet={} cmdAdsLimit={}", cmdPath, cmdValidateInternet, cmdAdsLimit);
+        FileItemProcessor proc = new FileItemProcessor();
+
+        List<FsFolderInfo> fileList = proc.loadFilesInfo(cmdPath);
+        log.debug("fileList({})=[", fileList.size());
+        for (FsFolderInfo item : fileList) {
+            log.debug("- file: {}", item);
+        }
+        log.debug("]");
+
+        List<FsItemStream> streamList = proc.loadStreams(cmdPath, fileList);
+        log.debug("streamList({})=[", fileList.size());
+        for (FsItemStream item : streamList) {
+            log.debug("- stream: {}", item);
+        }
+        log.debug("]");
+
+
+        log.error("execute-end");
+    }
+
+    //@Override
+    public void execute2(CommandLine commandLine) throws IOException {
+        String cmdPath = commandLine.getOptionValue(CMD_PATH);
+        if (Strings.isNullOrEmpty(cmdPath)) {
+            throw new IllegalArgumentException("param '-path' is null or empty!");
+        }
+        cmdPath = CommonHelper.dropPathSeparator(cmdPath);
         boolean cmdValidateInternet = commandLine.hasOption(VALIDATE_INTERNET_DOWNLOAD);
         int cmdAdsLimit = Integer.parseInt(commandLine.getOptionValue(LOAD_ADS_LIMIT, "0"));
         log.debug("cmdPath={} validateInternet={} cmdAdsLimit={}", cmdPath, cmdValidateInternet, cmdAdsLimit);
 
-        FileItemProcessor proc = new FileItemProcessor();
-        List<NtfsStreamInfo> streamsList =proc.fileItemProcessor(cmdPath);
+        FileItemProcessorPre proc = new FileItemProcessorPre();
+        List<NtfsStreamInfo> streamsList = proc.fileItemProcessor(cmdPath);
 
         StringBuilder resultReport = new StringBuilder();
         resultReport.append(String.format("%nresult info for path=%s size=%d:", cmdPath, streamsList.size()));

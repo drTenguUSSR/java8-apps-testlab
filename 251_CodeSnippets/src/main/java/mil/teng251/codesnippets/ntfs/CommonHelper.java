@@ -1,5 +1,7 @@
 package mil.teng251.codesnippets.ntfs;
 
+import com.google.common.base.Strings;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.CharacterIterator;
@@ -36,8 +38,8 @@ public class CommonHelper {
 
     public static String makeFullPath(String basePath, String subPath, String fileName) {
         return basePath
-                + (subPath == null ? "" : "\\" + subPath)
-                + (fileName == null ? "" : "\\" + fileName);
+                + (Strings.isNullOrEmpty(subPath) ? "" : "\\" + subPath)
+                + (Strings.isNullOrEmpty(fileName) ? "" : "\\" + fileName);
     }
 
     public static boolean isValidUtf8(byte[] data) {
