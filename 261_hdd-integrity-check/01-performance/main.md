@@ -1,4 +1,4 @@
-﻿# Проблема производительности
+﻿# 01. Проблема производительности
 
 ## Оценка текущих HDD
 
@@ -74,3 +74,20 @@ if ($LASTEXITCODE -ne 0) {
 
 VS Code. нажать shift+alt+f.
 прим. переформатируется весь документ. выделять фрагмент не требуется.
+
+### Генерация файла со случайным содержимым, средствами dd.exe из Git
+
+```powershell
+#итоговый файл 64Mb * 16 = 1 024 Mb = 1 Gb
+dd if=/dev/urandom of=$workFile bs=64M count=16 iflag=fullblock
+```
+
+```cmd
+C:\PROGRA~1\Git\usr\bin\dd.exe if=/dev/urandom of=dat-1.bin count=1 bs=4M iflag=fullblock
+```
+
+### Генерация контрольной суммы для одиночного файла
+
+```cmd
+certutil -hashfile "C:\path\to\your\file.txt" SHA512 > file.sha512
+```
