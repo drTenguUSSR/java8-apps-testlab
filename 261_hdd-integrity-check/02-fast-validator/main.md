@@ -78,11 +78,10 @@ FOR /F "tokens=*" %%i IN ('powershell -Command "Get-Date -Format \"yyyy-MM-dd HH
 echo === begin %DateTimeStamp% >> do-1.txt
 @rem fsum -c hv0-sha.txt
 @rem C:\PROGRA~1\Git\usr\bin\sha512sum.exe -c hv0-git512.txt
-@rem C:\PROGRA~1\Git\usr\bin\sha512sum.exe -c hvAll-git512.txt
-C:\PROGRA~1\Git\usr\bin\sha512sum.exe -c dat-one.sha >>do-1.txt
+C:\PROGRA~1\Git\usr\bin\sha512sum.exe -c hvAll-git512.txt 2>&1 >>do-1.txt 
+@rem C:\PROGRA~1\Git\usr\bin\sha512sum.exe -c dat-one.sha >>do-1.txt 
 FOR /F "tokens=*" %%i IN ('powershell -Command "Get-Date -Format \"yyyy-MM-dd HH:mm:ss\""') DO SET DateTimeStamp=%%i
 echo === end   %DateTimeStamp% >> do-1.txt
-
 ```
 
 ## Генерация хеш суммы через git/sha512sum
