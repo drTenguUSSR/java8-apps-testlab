@@ -6,11 +6,10 @@ buildscript {
         dependencyManagementVersion = "1.0.9.RELEASE"
         flywayVersion = "6.4.1"
     }
+
     repositories {
-        maven {
-            url "${artifactory_url}"
-            allowInsecureProtocol true
-        }
+        gradlePluginPortal()
+        mavenCentral()
     }
  
     dependencies {
@@ -18,7 +17,7 @@ buildscript {
         classpath "io.spring.gradle:dependency-management-plugin:${dependencyManagementVersion}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
         classpath "org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}"
-        classpath "org.flywaydb:flyway-gradle-plugin:${flywayVersion}"
+//        classpath "org.flywaydb:flyway-gradle-plugin:${flywayVersion}"
     }
 }
  
@@ -28,18 +27,19 @@ apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'kotlin-spring'
 apply plugin: "org.springframework.boot"
 apply plugin: "io.spring.dependency-management"
-apply plugin: "org.flywaydb.flyway"
+//apply plugin: "org.flywaydb.flyway"
 apply plugin: "pmd"
 apply plugin: 'idea'
- 
-group = "xx.xxx"
- 
+
+group = "mil.teng25c"
+version = '0.0.1-SNAPSHOT'
+description = 'kotlin tech test'
+
 repositories {
-    maven {
-        url "${artifactory_url}"
-        allowInsecureProtocol true
-    }
+    mavenLocal()
     mavenCentral()
+    gradlePluginPortal()
+    google()
 }
  
 configurations {
@@ -80,12 +80,12 @@ dependencies {
  
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+//    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.apache.camel.springboot:camel-spring-boot-starter:$camelVersion"
-    implementation "org.apache.camel.springboot:camel-rabbitmq-starter:$camelVersion"
-    implementation "org.apache.camel.springboot:camel-jackson-starter:$camelVersion"
-    implementation "org.apache.camel.springboot:camel-quartz-starter:$camelVersion"
+//    implementation "org.apache.camel.springboot:camel-rabbitmq-starter:$camelVersion"
+//    implementation "org.apache.camel.springboot:camel-jackson-starter:$camelVersion"
+//    implementation "org.apache.camel.springboot:camel-quartz-starter:$camelVersion"
  
     runtimeOnly "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.0"
@@ -99,8 +99,7 @@ dependencies {
     implementation "org.codehaus.janino:janino:3.1.2"
  
     developmentOnly "org.springframework.boot:spring-boot-devtools"
-    runtimeOnly "org.postgresql:postgresql"
-    implementation "com.isimplelab.msg:flyway-support:4.1.0"
+//    runtimeOnly "org.postgresql:postgresql"
  
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
  
@@ -109,8 +108,8 @@ dependencies {
     }
  
     testImplementation 'org.testcontainers:junit-jupiter:1.15.3'
-    testImplementation 'org.testcontainers:postgresql:1.15.3'
-    testImplementation 'org.testcontainers:rabbitmq:1.15.3'
+//    testImplementation 'org.testcontainers:postgresql:1.15.3'
+//    testImplementation 'org.testcontainers:rabbitmq:1.15.3'
 }
  
 tasks {
@@ -122,9 +121,7 @@ tasks {
 def targetPackage = "${buildDir}/dist"
 def distr = "${project.name}-${version}"
 def packageName = "$targetPackage/${distr}"
- 
-version = 'xx.xxx'
- 
+
 pmd {
     ignoreFailures = false
     ruleSets = ['java-basic',
