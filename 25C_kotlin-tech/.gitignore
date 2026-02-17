@@ -1,0 +1,18 @@
+/gradle/
+!/gradle/wrapper/gradle-wrapper.jar
+!/gradle/wrapper/gradle-wrapper.properties
+
+/.gradle
+/build
+
+# IntelliJ Idea
+/.idea
+
+# project specific
+/description/*.bak
+/config
+/tmpFolder
+/logs/**
+
+# Environment variables
+.env
